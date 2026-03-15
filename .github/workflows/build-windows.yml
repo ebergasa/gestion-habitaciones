@@ -42,13 +42,15 @@ jobs:
         shell: pwsh
         continue-on-error: true
 
-      - name: Subir instalador como artefacto
+      - name: Subir artefactos
         uses: actions/upload-artifact@v4
         with:
           name: GestionHabitaciones-Windows-${{ github.ref_name }}
           path: |
-            release/**/*.exe
-            dist/**/*.exe
+            release/**/*portable.exe
+            release/**/*.zip
+            dist/**/*portable.exe
+            dist/**/*.zip
           retention-days: 30
 
       # Crear release automáticamente al hacer push de un tag vX.Y.Z
@@ -57,6 +59,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release/**/*.exe
-            dist/**/*.exe
+            release/**/*portable.exe
+            release/**/*.zip
+            dist/**/*portable.exe
+            dist/**/*.zip
           generate_release_notes: true

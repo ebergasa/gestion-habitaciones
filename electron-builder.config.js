@@ -11,11 +11,13 @@ module.exports = {
   ],
   extraResources: [],
   win: {
-    target: [{ target: 'nsis', arch: ['x64'] }]
+    target: [
+      { target: 'portable', arch: ['x64'] },
+      { target: 'zip',      arch: ['x64'] }
+    ]
   },
-  nsis: {
-    oneClick: false,
-    allowToChangeInstallationDirectory: true
+  portable: {
+    artifactName: '${productName}-${version}-portable.exe'
   },
   linux: {
     target: ['AppImage']
