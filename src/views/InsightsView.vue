@@ -22,7 +22,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-value">{{ datos.altasMes }}</div>
-          <div class="stat-label">Altas este mes</div>
+          <div class="stat-label">Salidas este mes</div>
         </div>
       </div>
 

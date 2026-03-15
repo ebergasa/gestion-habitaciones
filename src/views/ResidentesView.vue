@@ -5,9 +5,18 @@
       <button class="btn btn-primary" @click="abrirFormulario(null)">+ Nuevo residente</button>
     </div>
 
-    <!-- Búsqueda -->
-    <div class="form-group" style="max-width:400px; margin-bottom:16px;">
-      <input type="text" v-model="busqueda" placeholder="Buscar por nombre, apellidos o DNI…" />
+    <!-- Búsqueda y filtros -->
+    <div style="display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap;">
+      <div class="form-group" style="flex:1; min-width:260px; margin-bottom:0;">
+        <input type="text" v-model="busqueda" placeholder="Buscar por nombre, apellidos o DNI…" />
+      </div>
+      <div class="form-group" style="margin-bottom:0; min-width:220px;">
+        <select v-model="filtroAsignacion">
+          <option value="">Todos los residentes</option>
+          <option value="con_habitacion">Con habitación asignada ahora</option>
+          <option value="sin_asignar">Sin historial de habitación</option>
+        </select>
+      </div>
     </div>
 
     <!-- Tabla -->
@@ -26,7 +35,7 @@
         <tbody>
           <tr v-if="!residentesFiltrados.length">
             <td colspan="6" style="text-align:center; padding:24px; color:#999;">
-              {{ busqueda ? 'Sin resultados' : 'No hay residentes registrados' }}
+              {{ busqueda || filtroAsignacion ? 'Sin resultados' : 'No hay residentes registrados' }}
             </td>
           </tr>
           <tr v-for="r in residentesFiltrados" :key="r.id">
@@ -101,6 +110,7 @@ import { normalizar } from '@/utils/normalizar.js'
 
 const store = useResidentesStore()
 const busqueda = ref('')
+const filtroAsignacion = ref('')
 const mostrarForm = ref(false)
 const editando = ref(null)
 const error = ref('')
@@ -112,6 +122,8 @@ onMounted(() => store.cargar())
 const residentesFiltrados = computed(() => {
   const q = normalizar(busqueda.value)
   return store.residentes.filter(r => {
+    if (filtroAsignacion.value === 'con_habitacion' && !r.habitacion_numero) return false
+    if (filtroAsignacion.value === 'sin_asignar' && !r.nunca_asignado) return false
     if (!q) return true
     return normalizar(`${r.nombre} ${r.apellidos} ${r.dni || ''}`).includes(q)
   })

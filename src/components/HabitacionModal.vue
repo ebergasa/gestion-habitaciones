@@ -27,14 +27,14 @@
               <span class="detalle">Entrada: {{ oc.fecha_entrada }}</span>
             </div>
             <button class="btn btn-sm btn-danger" @click="iniciarAlta(oc)">
-              Dar de alta
+              Registrar salida
             </button>
           </div>
         </div>
 
         <!-- Formulario de alta -->
         <div v-if="ocupacionAlta" class="seccion seccion-alta">
-          <h3 class="seccion-titulo">Alta de {{ ocupacionAlta.apellidos }}, {{ ocupacionAlta.nombre }}</h3>
+          <h3 class="seccion-titulo">Salida de {{ ocupacionAlta.apellidos }}, {{ ocupacionAlta.nombre }}</h3>
           <div v-if="errorAlta" class="alert alert-error">{{ errorAlta }}</div>
           <div class="form-group">
             <label>Fecha de salida *</label>
@@ -54,7 +54,7 @@
             <textarea v-model="formAlta.notas" rows="2" placeholder="Observaciones opcionales…"></textarea>
           </div>
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary" @click="confirmarAlta">Confirmar alta</button>
+            <button class="btn btn-primary" @click="confirmarAlta">Confirmar salida</button>
             <button class="btn btn-outline" @click="ocupacionAlta = null">Cancelar</button>
           </div>
         </div>

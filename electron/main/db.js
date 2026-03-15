@@ -128,7 +128,8 @@ export function getResidentes() {
     SELECT r.*,
            h.numero as habitacion_numero,
            o.id as ocupacion_id,
-           o.fecha_entrada
+           o.fecha_entrada,
+           CASE WHEN (SELECT COUNT(*) FROM ocupaciones oc2 WHERE oc2.residente_id = r.id) = 0 THEN 1 ELSE 0 END as nunca_asignado
     FROM residentes r
     LEFT JOIN ocupaciones o ON o.residente_id = r.id AND o.fecha_salida IS NULL
     LEFT JOIN habitaciones h ON h.id = o.habitacion_id
@@ -187,7 +188,7 @@ export function asignarResidente(habitacionId, residenteId, fechaEntrada) {
 }
 
 export function desasignarResidente(ocupacionId, { fechaSalida, motivoAltaId, notas }) {
-  if (!motivoAltaId) throw new Error('El motivo de alta es obligatorio')
+  if (!motivoAltaId) throw new Error('El motivo de salida es obligatorio')
 
   db.prepare(`
     UPDATE ocupaciones

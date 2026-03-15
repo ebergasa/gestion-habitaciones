@@ -47,7 +47,7 @@
 
       <h3>Acciones</h3>
       <ul>
-        <li><strong>Clic en una habitación</strong> — abre el panel de detalle donde puedes asignar o dar de alta a un residente.</li>
+        <li><strong>Clic en una habitación</strong> — abre el panel de detalle donde puedes asignar o registrar la salida de un residente.</li>
         <li><strong>Tabs Planta Baja / Primera / Segunda</strong> — cambia la planta visualizada.</li>
         <li><strong>Imprimir plano</strong> — imprime solo el SVG del plano en orientación apaisada (oculta la navegación).</li>
       </ul>
@@ -60,19 +60,19 @@
         <li>Pulsa <strong>Asignar</strong>.</li>
       </ol>
 
-      <h3>Dar de alta (desasignar) a un residente</h3>
+      <h3>Registrar salida de un residente</h3>
       <ol>
         <li>Haz clic en la habitación ocupada.</li>
-        <li>Pulsa el botón <strong>Dar de alta</strong> junto al nombre del residente.</li>
+        <li>Pulsa el botón <strong>Registrar salida</strong> junto al nombre del residente.</li>
         <li>Introduce la fecha de salida, el motivo (obligatorio) y las notas opcionales.</li>
-        <li>Pulsa <strong>Confirmar alta</strong>.</li>
+        <li>Pulsa <strong>Confirmar salida</strong>.</li>
       </ol>
     </section>
 
     <!-- ── Residentes ─────────────────────────────────────────────────────── -->
     <section class="ayuda-seccion" id="residentes">
       <h2>Residentes</h2>
-      <p>Gestión del listado de residentes dados de alta en el sistema.</p>
+      <p>Gestión del listado de residentes registrados en el sistema.</p>
       <ul>
         <li><strong>Nuevo residente</strong> — rellena nombre, apellidos, DNI (opcional) y código de residente (opcional). El DNI debe ser único si se introduce.</li>
         <li><strong>Editar</strong> — modifica los datos de un residente existente.</li>
@@ -101,9 +101,9 @@
         <div class="ayuda-fila"><span>Grado de ocupación</span><span>% de plazas ocupadas sobre el total de plazas disponibles</span></div>
         <div class="ayuda-fila"><span>Estancia media actual</span><span>Media de días que llevan los residentes actuales en la residencia</span></div>
         <div class="ayuda-fila"><span>Estancia media histórica</span><span>Media de días de todas las estancias finalizadas</span></div>
-        <div class="ayuda-fila"><span>Altas del mes</span><span>Número de salidas registradas en el mes en curso</span></div>
+        <div class="ayuda-fila"><span>Salidas del mes</span><span>Número de salidas registradas en el mes en curso</span></div>
         <div class="ayuda-fila"><span>Evolución mensual</span><span>% de ocupación por mes en los últimos 12 meses</span></div>
-        <div class="ayuda-fila"><span>Motivos de salida</span><span>Distribución de los motivos de alta registrados</span></div>
+        <div class="ayuda-fila"><span>Motivos de salida</span><span>Distribución de los motivos de salida registrados</span></div>
         <div class="ayuda-fila"><span>Duración de estancias</span><span>Histograma por intervalos: &lt;30 días, 1-6 meses, 6-12 meses, &gt;1 año</span></div>
       </div>
     </section>
@@ -138,7 +138,7 @@
       </ul>
 
       <h3>Motivos de salida</h3>
-      <p>Lista de motivos disponibles al dar de alta a un residente. Cada motivo tiene un <strong>código numérico único</strong> (no modificable) y un nombre descriptivo.</p>
+      <p>Lista de motivos disponibles al registrar la salida de un residente. Cada motivo tiene un <strong>código numérico único</strong> (no modificable) y un nombre descriptivo.</p>
       <ul>
         <li>El código numérico lo elige el usuario al crear el motivo y no puede cambiarse después.</li>
         <li>No se puede eliminar un motivo que ya esté asociado a ocupaciones del historial.</li>
