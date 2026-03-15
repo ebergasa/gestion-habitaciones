@@ -6,8 +6,7 @@ module.exports = {
     output: 'release'
   },
   files: [
-    'out/**',
-    'dist/**'
+    'out/**'
   ],
   extraResources: [],
   win: {

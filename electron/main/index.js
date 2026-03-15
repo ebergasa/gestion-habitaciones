@@ -30,7 +30,7 @@ function createWindow() {
     win.loadURL(process.env.ELECTRON_RENDERER_URL)
     win.webContents.openDevTools()
   } else {
-    win.loadFile(join(__dirname, '../../dist/index.html'))  // electron-vite build output
+    win.loadFile(join(__dirname, '../renderer/index.html'))  // electron-vite build output
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {
