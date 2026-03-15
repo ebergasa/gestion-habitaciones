@@ -110,6 +110,45 @@
         </div>
       </section>
 
+      <!-- ── Base de datos ─────────────────────────────────────────────────── -->
+      <section class="config-section">
+        <h2 class="config-section-title">Base de datos</h2>
+        <p style="font-size:12px; color:#888; margin-bottom:14px;">
+          Ruta del fichero <code>gestion-habitaciones.sqlite</code>. Por defecto se guarda en la misma carpeta que el ejecutable, lo que permite copiar ambos ficheros juntos a cualquier equipo o unidad de red.
+        </p>
+
+        <div class="form-group" style="max-width:560px;">
+          <label>Ruta actual</label>
+          <div style="display:flex; gap:8px;">
+            <input
+              type="text"
+              :value="rutaDB || '(por defecto, junto al ejecutable)'"
+              readonly
+              style="flex:1; background:#f9f9f9; color:#555; cursor:default;"
+            />
+            <button class="btn btn-outline btn-sm" @click="seleccionarCarpetaDB">Cambiar…</button>
+          </div>
+        </div>
+
+        <template v-if="nuevaRutaDB !== null">
+          <div class="alert alert-info" style="margin-bottom:10px; max-width:560px;">
+            Nueva ruta: <strong>{{ nuevaRutaDB || '(por defecto, junto al ejecutable)' }}</strong>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary btn-sm" @click="guardarRutaDB">Guardar y reiniciar</button>
+            <button class="btn btn-outline btn-sm" @click="nuevaRutaDB = null">Cancelar</button>
+          </div>
+        </template>
+
+        <div v-if="rutaDB && nuevaRutaDB === null" style="margin-top:10px;">
+          <button class="btn btn-outline btn-sm" @click="pedirRestablecerRuta">Restablecer por defecto</button>
+        </div>
+
+        <p style="font-size:11px; color:#999; margin-top:10px;">
+          La aplicación se reiniciará al aplicar el cambio. Si el fichero no existe en la nueva ubicación se creará uno vacío.
+        </p>
+      </section>
+
       <!-- ── Motivos de salida ─────────────────────────────────────────────── -->
       <section class="config-section">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
@@ -188,10 +227,11 @@ const habStore = useHabitacionesStore()
 const nombreEdit = ref(cfg.nombreResidencia)
 const nombreGuardado = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
   nombreEdit.value = cfg.nombreResidencia
   habStore.cargar()
   cargarMotivos()
+  rutaDB.value = await window.api.getRutaDB()
 })
 
 async function guardarNombre() {
@@ -234,6 +274,27 @@ async function cambiarTipo(h, nuevoTipo) {
 
 function plantaLabel(p) {
   return { baja: 'Planta Baja', primera: 'Primera Planta', segunda: 'Segunda Planta' }[p] || p
+}
+
+// ── Base de datos ─────────────────────────────────────────────────────────────
+const rutaDB = ref(null)
+const nuevaRutaDB = ref(null)  // null = sin cambio pendiente
+
+async function seleccionarCarpetaDB() {
+  const ruta = await window.api.seleccionarCarpetaDB()
+  if (ruta) nuevaRutaDB.value = ruta
+}
+
+async function guardarRutaDB() {
+  await window.api.setRutaDB(nuevaRutaDB.value)
+  await window.api.reiniciarApp()
+}
+
+async function pedirRestablecerRuta() {
+  if (!confirm('¿Restablecer la ubicación por defecto (junto al ejecutable)? La app se reiniciará.')) return
+  nuevaRutaDB.value = ''  // cadena vacía → borrar la ruta guardada
+  await window.api.setRutaDB(null)
+  await window.api.reiniciarApp()
 }
 
 // ── Motivos de salida ─────────────────────────────────────────────────────────

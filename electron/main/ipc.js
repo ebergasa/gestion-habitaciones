@@ -1,4 +1,5 @@
-import { ipcMain, dialog } from 'electron'
+import { ipcMain, dialog, app } from 'electron'
+import { join } from 'path'
 import { readFileSync } from 'fs'
 import ExcelJS from 'exceljs'
 import * as db from './db.js'
@@ -39,6 +40,24 @@ export function registerHandlers() {
   }))
 
   ipcMain.handle('deleteLogo', h(() => config.deleteLogo()))
+
+  ipcMain.handle('getRutaDB', h(() => config.getRutaDB()))
+
+  ipcMain.handle('setRutaDB', h((_, ruta) => config.setRutaDB(ruta)))
+
+  ipcMain.handle('seleccionarCarpetaDB', h(async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      title: 'Seleccionar carpeta para la base de datos',
+      properties: ['openDirectory']
+    })
+    if (canceled || !filePaths.length) return null
+    return join(filePaths[0], 'gestion-habitaciones.sqlite')
+  }))
+
+  ipcMain.handle('reiniciarApp', () => {
+    app.relaunch()
+    app.quit()
+  })
 
   // ── Habitaciones ──────────────────────────────────────────────────────────
   ipcMain.handle('getHabitacionesConOcupacion', h(() => db.getHabitacionesConOcupacion()))

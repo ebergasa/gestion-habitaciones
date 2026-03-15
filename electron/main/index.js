@@ -4,12 +4,9 @@ import { fileURLToPath } from 'url'
 import { initDB } from './db.js'
 import { registerHandlers } from './ipc.js'
 import { crearBackup } from './backup.js'
-import { initConfig } from './config.js'
+import { initConfig, getRutaDB } from './config.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-
-// Ruta de la base de datos: variable de entorno o carpeta de datos del usuario
-const dbPath = process.env.DB_PATH || join(app.getPath('userData'), 'gestion-habitaciones.sqlite')
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -30,7 +27,7 @@ function createWindow() {
     win.loadURL(process.env.ELECTRON_RENDERER_URL)
     win.webContents.openDevTools()
   } else {
-    win.loadFile(join(__dirname, '../renderer/index.html'))  // electron-vite build output
+    win.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -40,7 +37,13 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // initConfig debe ir primero para poder leer la ruta de la BD
   initConfig(app.getPath('userData'))
+
+  // Ruta de la BD: variable de entorno > configuración guardada > junto al exe
+  const defaultDbPath = join(dirname(app.getPath('exe')), 'gestion-habitaciones.sqlite')
+  const dbPath = process.env.DB_PATH || getRutaDB() || defaultDbPath
+
   crearBackup(dbPath)
   initDB(dbPath)
   registerHandlers()

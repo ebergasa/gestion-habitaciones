@@ -40,6 +40,12 @@ const api = {
   // Insights
   getInsights: () => ipcRenderer.invoke('getInsights'),
 
+  // Base de datos
+  getRutaDB: () => ipcRenderer.invoke('getRutaDB'),
+  setRutaDB: (ruta) => ipcRenderer.invoke('setRutaDB', ruta),
+  seleccionarCarpetaDB: () => ipcRenderer.invoke('seleccionarCarpetaDB'),
+  reiniciarApp: () => ipcRenderer.invoke('reiniciarApp'),
+
   // Exportación
   seleccionarRutaExcel: () => ipcRenderer.invoke('seleccionarRutaExcel'),
   exportarExcel: (ruta) => ipcRenderer.invoke('exportarExcel', ruta)

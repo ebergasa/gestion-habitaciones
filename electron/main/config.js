@@ -47,3 +47,14 @@ export function deleteLogo() {
   delete cfg.logo
   write(cfg)
 }
+
+export function getRutaDB() {
+  return read().rutaDB || null
+}
+
+export function setRutaDB(ruta) {
+  const cfg = read()
+  if (ruta) cfg.rutaDB = ruta
+  else delete cfg.rutaDB
+  write(cfg)
+}
