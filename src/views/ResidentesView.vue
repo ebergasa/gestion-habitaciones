@@ -67,7 +67,7 @@
           <div class="form-row">
             <div class="form-group">
               <label>Nombre *</label>
-              <input type="text" v-model="form.nombre" />
+              <input ref="inputNombre" type="text" v-model="form.nombre" />
             </div>
             <div class="form-group">
               <label>Apellidos *</label>
@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useResidentesStore } from '@/stores/residentes'
 import { normalizar } from '@/utils/normalizar.js'
 
@@ -105,6 +105,7 @@ const mostrarForm = ref(false)
 const editando = ref(null)
 const error = ref('')
 const form = ref({ nombre: '', apellidos: '', dni: '', codigo_externo: '' })
+const inputNombre = ref(null)
 
 onMounted(() => store.cargar())
 
@@ -123,6 +124,7 @@ function abrirFormulario(r) {
     ? { nombre: r.nombre, apellidos: r.apellidos, dni: r.dni || '', codigo_externo: r.codigo_externo || '' }
     : { nombre: '', apellidos: '', dni: '', codigo_externo: '' }
   mostrarForm.value = true
+  nextTick(() => inputNombre.value?.focus())
 }
 
 async function guardar() {
