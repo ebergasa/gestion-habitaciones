@@ -10,18 +10,9 @@ module.exports = {
   ],
   extraResources: [],
   win: {
-    target: [
-      { target: 'portable', arch: ['x64'] },
-      { target: 'zip',      arch: ['x64'] }
-    ]
+    target: [{ target: 'portable', arch: ['x64'] }]
   },
   portable: {
     artifactName: '${productName}-${version}-portable.exe'
-  },
-  linux: {
-    target: ['AppImage']
-  },
-  mac: {
-    target: ['dmg']
   }
 }
