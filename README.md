@@ -139,3 +139,7 @@ DB_PATH=\\servidor\residencia\db.sqlite npm run dev
 | Variable | Descripción |
 |---|---|
 | `DB_PATH` | Ruta absoluta al fichero `.sqlite` |
+
+## Licencia
+
+[MIT](LICENSE) © 2026 Eduardo Bergasa
