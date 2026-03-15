@@ -1,0 +1,48 @@
+import { contextBridge, ipcRenderer } from 'electron'
+
+const api = {
+  // Configuración
+  getConfig: () => ipcRenderer.invoke('getConfig'),
+  setNombreResidencia: (nombre) => ipcRenderer.invoke('setNombreResidencia', nombre),
+  seleccionarLogo: () => ipcRenderer.invoke('seleccionarLogo'),
+  deleteLogo: () => ipcRenderer.invoke('deleteLogo'),
+
+  // Habitaciones
+  getHabitacionesConOcupacion: () => ipcRenderer.invoke('getHabitacionesConOcupacion'),
+  updateHabitacion: (id, data) => ipcRenderer.invoke('updateHabitacion', id, data),
+
+  // Residentes
+  getResidentes: () => ipcRenderer.invoke('getResidentes'),
+  createResidente: (data) => ipcRenderer.invoke('createResidente', data),
+  updateResidente: (id, data) => ipcRenderer.invoke('updateResidente', id, data),
+  deleteResidente: (id) => ipcRenderer.invoke('deleteResidente', id),
+
+  // Ocupaciones
+  asignarResidente: (habitacionId, residenteId, fechaEntrada) =>
+    ipcRenderer.invoke('asignarResidente', habitacionId, residenteId, fechaEntrada),
+  desasignarResidente: (ocupacionId, data) =>
+    ipcRenderer.invoke('desasignarResidente', ocupacionId, data),
+
+  // Motivos de alta
+  getMotivosAlta: () => ipcRenderer.invoke('getMotivosAlta'),
+  createMotivoAlta: (data) => ipcRenderer.invoke('createMotivoAlta', data),
+  updateMotivoAlta: (id, data) => ipcRenderer.invoke('updateMotivoAlta', id, data),
+  deleteMotivoAlta: (id) => ipcRenderer.invoke('deleteMotivoAlta', id),
+
+  // Historial
+  getHistorial: (filtros) => ipcRenderer.invoke('getHistorial', filtros),
+
+  // Búsqueda
+  buscarPorHabitacion: (numero) => ipcRenderer.invoke('buscarPorHabitacion', numero),
+  buscarPorResidente: (texto) => ipcRenderer.invoke('buscarPorResidente', texto),
+  getHabitacionesLibres: () => ipcRenderer.invoke('getHabitacionesLibres'),
+
+  // Insights
+  getInsights: () => ipcRenderer.invoke('getInsights'),
+
+  // Exportación
+  seleccionarRutaExcel: () => ipcRenderer.invoke('seleccionarRutaExcel'),
+  exportarExcel: (ruta) => ipcRenderer.invoke('exportarExcel', ruta)
+}
+
+contextBridge.exposeInMainWorld('api', api)
