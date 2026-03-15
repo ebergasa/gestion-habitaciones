@@ -15,9 +15,7 @@ module.exports = {
   },
   nsis: {
     oneClick: false,
-    allowToChangeInstallationDirectory: true,
-    installerIcon: 'build/icon.ico',
-    uninstallerIcon: 'build/icon.ico'
+    allowToChangeInstallationDirectory: true
   },
   linux: {
     target: ['AppImage']
