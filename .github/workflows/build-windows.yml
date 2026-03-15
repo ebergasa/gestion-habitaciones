@@ -35,13 +35,18 @@ jobs:
         run: npm run build
 
       - name: Empaquetar instalador Windows
-        run: npm run dist -- --publish never
+        run: npx electron-builder --win --config electron-builder.config.js --publish never
+
+      - name: Listar directorio release (debug)
+        run: Get-ChildItem -Recurse release | Select-Object FullName
+        shell: pwsh
+        continue-on-error: true
 
       - name: Subir instalador como artefacto
         uses: actions/upload-artifact@v4
         with:
           name: GestionHabitaciones-Windows-${{ github.ref_name }}
-          path: release/*.exe
+          path: release/**/*.exe
           retention-days: 30
 
       # Crear release automáticamente al hacer push de un tag vX.Y.Z
@@ -49,5 +54,5 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: release/*.exe
+          files: release/**/*.exe
           generate_release_notes: true
