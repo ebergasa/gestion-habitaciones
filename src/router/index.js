@@ -5,6 +5,7 @@ import HistorialView from '../views/HistorialView.vue'
 import InsightsView from '../views/InsightsView.vue'
 import BuscadorView from '../views/BuscadorView.vue'
 import ConfigView from '../views/ConfigView.vue'
+import AyudaView from '../views/AyudaView.vue'
 
 const routes = [
   { path: '/', redirect: '/plano' },
@@ -13,7 +14,8 @@ const routes = [
   { path: '/historial', component: HistorialView },
   { path: '/insights', component: InsightsView },
   { path: '/buscar', component: BuscadorView },
-  { path: '/config', component: ConfigView }
+  { path: '/config', component: ConfigView },
+  { path: '/ayuda', component: AyudaView }
 ]
 
 export default createRouter({
