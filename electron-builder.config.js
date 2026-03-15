@@ -6,10 +6,12 @@ module.exports = {
     output: 'release'
   },
   files: [
-    'out/**'
+    'out/**',
+    'build/icon.ico'
   ],
   extraResources: [],
   win: {
+    icon: 'build/icon.ico',
     target: [{ target: 'portable', arch: ['x64'] }]
   },
   portable: {

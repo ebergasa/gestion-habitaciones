@@ -9,12 +9,17 @@ import { initConfig, getRutaDB } from './config.js'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 function createWindow() {
+  const iconPath = app.isPackaged
+    ? join(process.resourcesPath, '../build/icon.ico')
+    : join(__dirname, '../../build/icon.ico')
+
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
     minWidth: 1024,
     minHeight: 600,
     title: 'Gestión de Habitaciones',
+    icon: iconPath,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
