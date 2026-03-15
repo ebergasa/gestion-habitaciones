@@ -1,5 +1,7 @@
 # Gestión de Habitaciones
 
+![Build Windows](https://github.com/ebergasa/gestion-habitaciones/actions/workflows/build-windows.yml/badge.svg)
+
 App de escritorio para gestionar la ocupación de habitaciones en una residencia. Muestra planos SVG interactivos por planta, permite asignar/desasignar residentes y exporta a Excel.
 
 ## Stack
@@ -30,9 +32,34 @@ Arranca Electron con hot-reload. La base de datos se crea automáticamente en `%
 ## Build / distribución
 
 ```bash
-npm run build   # compila main + renderer
-npm run dist    # genera instalador Windows (.exe NSIS)
+npm run build   # compila main + renderer con electron-vite
+npm run dist    # genera instalador Windows (.exe NSIS) en /release
 ```
+
+El instalador resultante (`release/*.exe`) permite instalar la app en cualquier PC Windows x64 con un asistente NSIS estándar.
+
+## CI/CD — GitHub Actions
+
+El repositorio incluye un workflow que compila automáticamente el instalador Windows en cada push.
+
+**Triggers:**
+
+| Evento | Resultado |
+|---|---|
+| Push a `main` | Compila y guarda el `.exe` como artefacto (30 días) |
+| `workflow_dispatch` | Lanzamiento manual desde la pestaña Actions |
+| Push de tag `v*` | Crea un Release en GitHub con el `.exe` adjunto |
+
+**Publicar una nueva versión:**
+
+```bash
+git tag v1.2.0
+git push origin v1.2.0
+```
+
+Esto lanza el workflow, compila el instalador y crea automáticamente un Release en GitHub con las notas de cambios generadas a partir de los commits.
+
+Los artefactos de cada build están disponibles en la pestaña **Actions → Build Windows → Artifacts**.
 
 ## Edificio
 
