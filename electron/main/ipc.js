@@ -23,12 +23,13 @@ export function registerHandlers() {
   ipcMain.handle('setNombreResidencia', h((_, nombre) => config.setNombreResidencia(nombre)))
 
   ipcMain.handle('seleccionarLogo', h(async () => {
-    const { filePath } = await dialog.showOpenDialog({
+    const { canceled, filePaths } = await dialog.showOpenDialog({
       title: 'Seleccionar logotipo',
       filters: [{ name: 'Imágenes', extensions: ['svg', 'png', 'jpg', 'jpeg', 'webp'] }],
       properties: ['openFile']
     })
-    if (!filePath) return null
+    if (canceled || !filePaths.length) return null
+    const filePath = filePaths[0]
     const buffer = readFileSync(filePath)
     const ext = filePath.split('.').pop().toLowerCase()
     const mime = ext === 'svg' ? 'image/svg+xml' : `image/${ext}`

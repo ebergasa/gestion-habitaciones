@@ -1,35 +1,46 @@
-// Planta Baja: habitaciones 1-13
-// Layout perimetral en un espacio más reducido
+// Planta Baja: habitaciones 1–13 en corredor inferior
+// Zonas comunes en lados y parte superior (igual que el Excel)
 
-export const viewBox = '0 0 900 500'
+export const viewBox = '0 0 1100 620'
 
-export const rooms = [
-  // Ala izquierda (habitaciones 1-4)
-  { numero: '1',  x: 20,  y: 80,  w: 90, h: 60 },
-  { numero: '2',  x: 20,  y: 145, w: 90, h: 60 },
-  { numero: '3',  x: 20,  y: 210, w: 90, h: 60 },
-  { numero: '4',  x: 20,  y: 275, w: 90, h: 60 },
+const RW = 63   // ancho habitación individual
+const RH = 55   // alto habitación
+const G  = 3    // gap
 
-  // Corredor inferior (habitaciones 5-9)
-  { numero: '5',  x: 130, y: 390, w: 80, h: 60 },
-  { numero: '6',  x: 215, y: 390, w: 80, h: 60 },
-  { numero: '7',  x: 300, y: 390, w: 80, h: 60 },
-  { numero: '8',  x: 385, y: 390, w: 80, h: 60 },
-  { numero: '9',  x: 470, y: 390, w: 80, h: 60 },
+// Corredor inferior: 1–13 de izquierda a derecha
+const corridorBottom = []
+const startX = 160
+for (let i = 0; i < 13; i++) {
+  corridorBottom.push({
+    numero: String(i + 1),
+    x: startX + i * (RW + G),
+    y: 505,
+    w: RW, h: RH
+  })
+}
 
-  // Ala derecha (habitaciones 10-13)
-  { numero: '10', x: 790, y: 80,  w: 90, h: 60 },
-  { numero: '11', x: 790, y: 145, w: 90, h: 60 },
-  { numero: '12', x: 790, y: 210, w: 90, h: 60 },
-  { numero: '13', x: 790, y: 275, w: 90, h: 60 },
+export const rooms = [...corridorBottom]
+
+// Zonas comunes (solo decorativas, sin interacción)
+export const zones = [
+  { text: 'Despacho\nMédico',       x: 15,   y: 15,  w: 120, h: 80  },
+  { text: 'Terapia\nOcupacional',   x: 15,   y: 110, w: 120, h: 130 },
+  { text: 'Comedor',                x: 15,   y: 255, w: 120, h: 220 },
+  { text: 'Peluquería',             x: 160,  y: 15,  w: 120, h: 55  },
+  { text: 'Fisioterapia',           x: 283,  y: 15,  w: 220, h: 55  },
+  { text: 'Recepción',              x: 506,  y: 15,  w: 150, h: 55  },
+  { text: 'Administración',         x: 659,  y: 15,  w: 200, h: 55  },
+  { text: 'TASOC',                  x: 862,  y: 15,  w: 150, h: 55  },
+  { text: 'Sala\nVisitas',          x: 1025, y: 15,  w: 60,  h: 70  },
+  { text: 'Psicología',             x: 1025, y: 100, w: 60,  h: 60  },
+  { text: 'Capilla',                x: 1025, y: 175, w: 60,  h: 60  },
+  { text: 'Sala TV',                x: 1025, y: 250, w: 60,  h: 170 },
+  { text: 'Sala\nVisitas',          x: 1025, y: 435, w: 60,  h: 60  },
+  { text: 'WC',                     x: 1025, y: 510, w: 60,  h: 55  },
 ]
 
 export const labels = [
-  { text: 'Planta Baja', x: 450, y: 40, fontSize: 18, fontWeight: 'bold' },
-  { text: 'Zonas Comunes', x: 430, y: 240, fontSize: 14, color: '#999' },
+  { text: 'PLANTA BAJA', x: 570, y: 280, fontSize: 26, fontWeight: 'bold', color: '#ccc' },
 ]
 
-export const walls = [
-  // Perímetro exterior
-  { x: 10, y: 60, w: 880, h: 420, fill: 'none', stroke: '#999', strokeWidth: 2 }
-]
+export const walls = []

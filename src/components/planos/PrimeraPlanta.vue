@@ -4,9 +4,9 @@
 
 <script setup>
 import PlanoBase from './PlanoBase.vue'
-import { rooms, labels, walls, viewBox } from '@/data/plano-primera.js'
+import { rooms, labels, walls, viewBox, zones } from '@/data/plano-primera.js'
 
 defineEmits(['clickHabitacion'])
 
-const planoData = { rooms, labels, walls, viewBox }
+const planoData = { rooms, labels, walls, viewBox, zones }
 </script>

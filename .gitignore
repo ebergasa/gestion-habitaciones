@@ -6,3 +6,5 @@ release/
 *.sqlite
 backups/
 .DS_Store
+logo-header.svg
+favicon.ico

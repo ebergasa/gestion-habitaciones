@@ -1,6 +1,21 @@
 <template>
   <svg :viewBox="viewBox" class="plano-svg" xmlns="http://www.w3.org/2000/svg">
 
+    <!-- Zonas comunes (decorativas) -->
+    <g v-for="(z, i) in (zones || [])" :key="'z-' + i">
+      <rect
+        :x="z.x" :y="z.y" :width="z.w" :height="z.h"
+        fill="#f0f4f8" stroke="#c8d0da" stroke-width="1" rx="3"
+      />
+      <text text-anchor="middle" font-size="10" fill="#7b8ea0" font-weight="500">
+        <tspan
+          v-for="(line, li) in z.text.split('\n')" :key="li"
+          :x="z.x + z.w / 2"
+          :y="z.y + z.h / 2 + (li - (z.text.split('\n').length - 1) / 2) * 13"
+        >{{ line }}</tspan>
+      </text>
+    </g>
+
     <!-- Paredes -->
     <rect
       v-for="(w, i) in walls" :key="'wall-' + i"
@@ -61,7 +76,7 @@
 import { computed } from 'vue'
 import { useHabitacionesStore } from '@/stores/habitaciones'
 
-const props = defineProps({ rooms: Array, labels: Array, walls: Array, viewBox: String })
+const props = defineProps({ rooms: Array, labels: Array, walls: Array, viewBox: String, zones: Array })
 defineEmits(['clickHabitacion'])
 
 const store = useHabitacionesStore()
