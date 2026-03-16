@@ -64,7 +64,7 @@
           text-anchor="middle" dominant-baseline="middle"
           :fill="textoColorBanda(room.numero)"
           :font-size="numFontSize(room)"
-          font-weight="bold"
+          :font-weight="fontWeightBanda(room.numero)"
         >{{ room.numero }}</text>
 
         <!-- Nombre(s) del/los residente(s) -->
@@ -134,6 +134,8 @@ function colorDeHabitacion(numero) {
 }
 
 function strokeDeHabitacion(numero) {
+  // Habitaciones ocupadas siempre con marco visible
+  if (lineasResidente(numero).length) return '#bbb'
   return colorDeHabitacion(numero) === '#FFFFFF' ? '#bbb' : 'white'
 }
 
@@ -150,6 +152,11 @@ function colorBanda(numero) {
 
 function textoColorBanda(numero) {
   return colorDeHabitacion(numero) === '#FFFFFF' ? '#333' : 'white'
+}
+
+// Banda gris (llena): peso menor para que el número no parezca más grande que en naranja
+function fontWeightBanda(numero) {
+  return colorDeHabitacion(numero) === '#FFFFFF' ? '500' : 'bold'
 }
 
 // Altura de la banda del número (proporcional al tamaño de fuente)
