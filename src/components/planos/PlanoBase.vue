@@ -1,5 +1,7 @@
 <template>
-  <svg :viewBox="viewBox" class="plano-svg" xmlns="http://www.w3.org/2000/svg">
+  <svg :viewBox="viewBox" class="plano-svg" xmlns="http://www.w3.org/2000/svg"
+    font-family="'Inter', 'Segoe UI', system-ui, sans-serif"
+    text-rendering="optimizeLegibility">
 
     <!-- Zonas comunes (decorativas) -->
     <g v-for="(z, i) in (zones || [])" :key="'z-' + i">
@@ -65,6 +67,7 @@
           :fill="textoColorBanda(room.numero)"
           :font-size="numFontSize(room)"
           :font-weight="fontWeightBanda(room.numero)"
+          font-variant-numeric="tabular-nums"
         >{{ room.numero }}</text>
 
         <!-- Nombre(s) del/los residente(s) -->
@@ -96,6 +99,7 @@
           :fill="textoColor(room.numero)"
           :font-size="numFontSize(room)"
           font-weight="bold"
+          font-variant-numeric="tabular-nums"
         >{{ room.numero }}</text>
       </template>
     </g>

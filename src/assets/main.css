@@ -13,7 +13,7 @@
   --color-danger: #e74c3c;
   --color-text: #2c3e50;
   --color-border: #ddd;
-  --font: 'Segoe UI', system-ui, sans-serif;
+  --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
 
 html, body, #app {
@@ -376,6 +376,17 @@ tbody tr:hover { background: #fafafa; }
   .page { padding: 0; }
   .plano-container { border: none; }
   @page { size: A4 landscape; margin: 10mm; }
+
+  /* Colores e imágenes se imprimen tal cual */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* SVG: escala al ancho; viewBox ratio ~1.92 → 144mm alto en A4 landscape */
+  .plano-svg {
+    width: 100%;
+    height: auto;
+    max-height: 150mm;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  }
 
   .print-header {
     display: flex;
