@@ -27,7 +27,7 @@ npx @electron/rebuild -f -w better-sqlite3
 npm run dev
 ```
 
-Arranca Electron con hot-reload. La base de datos se crea automáticamente en `%APPDATA%/gestion-habitaciones/gestion-habitaciones.sqlite` (o en la ruta definida por la variable de entorno `DB_PATH`).
+Arranca Electron con hot-reload. La base de datos se crea automáticamente junto al ejecutable (modo portable) o en la ruta definida por `DB_PATH`.
 
 ## Build / distribución
 
@@ -72,15 +72,31 @@ Los artefactos de cada build están disponibles en la pestaña **Actions → Bui
 
 ## Funcionalidades
 
-- **Plano interactivo** — SVG por planta con colores de ocupación en tiempo real (verde / naranja / rojo)
+- **Plano interactivo** — SVG por planta con colores de ocupación en tiempo real (verde / naranja / rojo). Habitaciones ocupadas muestran el número en banda de color y los nombres de los residentes debajo.
 - **Asignación de residentes** — buscar por nombre/DNI, asignar con fecha de entrada
-- **Alta de residentes** — fecha de salida + motivo obligatorio + notas
+- **Registro de salida** — fecha de salida + motivo obligatorio + notas
 - **Historial** — tabla filtrable por planta, fechas, residente y motivo; exportable a Excel (3 hojas)
-- **Análisis** — gráficos de ocupación, evolución mensual, motivos de salida, distribución de estancias
+- **Análisis** — gráficos de ocupación, evolución mensual, motivos de salida y distribución de estancias, con filtro de rango de fechas
 - **Buscador** — por número de habitación, por residente o listado de habitaciones libres
-- **Configuración** — gestión de motivos de salida con código numérico
-- **Backup automático** — copia del `.sqlite` al arrancar (conserva los 5 últimos)
-- **Impresión** — `Ctrl+P` imprime solo el plano SVG en landscape
+- **Configuración** — identidad de la residencia (nombre + logotipo), tipos de habitación, base de datos y motivos de salida
+- **Backup automático** — copia del `.sqlite` al arrancar (conserva los 5 últimos); visible desde Configuración
+- **Impresión** — `Ctrl+P` imprime solo el plano SVG en A4 landscape con cabecera de la residencia
+
+## Ruta de la base de datos
+
+Por defecto el fichero `gestion-habitaciones.sqlite` se guarda en la misma carpeta que el ejecutable (modo portable), lo que permite copiar ejecutable + base de datos a cualquier equipo o unidad de red.
+
+La ruta puede cambiarse desde **Configuración → Base de datos** o mediante la variable de entorno `DB_PATH`:
+
+```bash
+DB_PATH=\\servidor\residencia\db.sqlite npm run dev
+```
+
+## Variables de entorno
+
+| Variable | Descripción |
+|---|---|
+| `DB_PATH` | Ruta absoluta al fichero `.sqlite` |
 
 ## Estructura del proyecto
 
@@ -140,22 +156,6 @@ node scripts/seed-demo.cjs
 ```
 
 > **Peligro:** el script **borra irreversiblemente** la base de datos actual antes de cargar los datos sintéticos. Pedirá confirmación explícita escribiendo `si` antes de proceder. No ejecutar en entornos con datos reales.
-
-## Ruta de la base de datos
-
-Por defecto: carpeta de datos de usuario del sistema operativo.
-
-Para usar una ruta personalizada (p. ej. disco de red):
-
-```bash
-DB_PATH=\\servidor\residencia\db.sqlite npm run dev
-```
-
-## Variables de entorno
-
-| Variable | Descripción |
-|---|---|
-| `DB_PATH` | Ruta absoluta al fichero `.sqlite` |
 
 ## Licencia
 
