@@ -195,6 +195,6 @@ function numFontSize(room) {
 
 function nombreFontSize(room) {
   const base = Math.min(room.w, room.h)
-  return Math.max(7, base * 0.19)
+  return Math.min(11, Math.max(8, base * 0.19))
 }
 </script>

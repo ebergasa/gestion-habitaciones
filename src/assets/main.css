@@ -371,6 +371,7 @@ tbody tr:hover { background: #fafafa; }
 
 /* Print */
 @media print {
+  html, body, #app, .main-content, .page { background: white !important; }
   .sidebar, .topbar, .tabs, .stats-bar, .btn, .leyenda { display: none !important; }
   .main-content { overflow: visible; }
   .page { padding: 0; }
@@ -384,7 +385,7 @@ tbody tr:hover { background: #fafafa; }
   .plano-svg {
     width: 100%;
     height: auto;
-    max-height: 150mm;
+    max-height: 159mm;
     font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   }
 
