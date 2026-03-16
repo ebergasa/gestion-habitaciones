@@ -1,6 +1,6 @@
 {
   "name": "gestion-habitaciones",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Gestión de habitaciones para residencias",
   "main": "out/main/index.js",
   "scripts": {

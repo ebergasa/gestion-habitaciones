@@ -1,6 +1,9 @@
 <template>
   <div class="page">
-    <h1 style="font-size:20px; font-weight:600; margin-bottom:20px;">Configuración</h1>
+    <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:20px;">
+      <h1 style="font-size:20px; font-weight:600;">Configuración</h1>
+      <span v-if="version" style="font-size:12px; color:#aaa;">v{{ version }}</span>
+    </div>
 
     <div style="max-width:700px; display:flex; flex-direction:column; gap:24px;">
 
@@ -265,6 +268,8 @@ const habStore = useHabitacionesStore()
 const nombreEdit = ref(cfg.nombreResidencia)
 const nombreGuardado = ref(false)
 
+const version = ref(null)
+
 onMounted(async () => {
   nombreEdit.value = cfg.nombreResidencia
   habStore.cargar()
@@ -272,6 +277,7 @@ onMounted(async () => {
   rutaDB.value = await window.api.getRutaDB()
   dbPath.value = await window.api.getDbPath()
   backups.value = await window.api.getBackups()
+  version.value = await window.api.getVersion()
 })
 
 async function guardarNombre() {

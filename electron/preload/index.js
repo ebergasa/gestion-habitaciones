@@ -1,6 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 const api = {
+  // Versión
+  getVersion: () => ipcRenderer.invoke('getVersion'),
+
   // Configuración
   getConfig: () => ipcRenderer.invoke('getConfig'),
   setNombreResidencia: (nombre) => ipcRenderer.invoke('setNombreResidencia', nombre),

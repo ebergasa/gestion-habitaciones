@@ -41,6 +41,7 @@ export function registerHandlers() {
 
   ipcMain.handle('deleteLogo', h(() => config.deleteLogo()))
 
+  ipcMain.handle('getVersion', h(() => app.getVersion()))
   ipcMain.handle('getRutaDB', h(() => config.getRutaDB()))
   ipcMain.handle('getDbPath', h(() => db.getDbPath()))
   ipcMain.handle('getBackups', h(() => db.getBackups()))
