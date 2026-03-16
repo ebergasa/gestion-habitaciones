@@ -1,6 +1,15 @@
 <template>
   <div class="page">
-    <h1 style="font-size:20px; font-weight:600; margin-bottom:20px;">Análisis e Histórico</h1>
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px; flex-wrap:wrap;">
+      <h1 style="font-size:20px; font-weight:600; margin:0;">Análisis e Histórico</h1>
+      <div class="filtro-fechas">
+        <label>Desde</label>
+        <input type="date" v-model="filtro.desde" />
+        <label>Hasta</label>
+        <input type="date" v-model="filtro.hasta" />
+        <button class="btn btn-primary btn-sm" @click="cargar">Aplicar</button>
+      </div>
+    </div>
 
     <div v-if="cargando" class="alert alert-info">Cargando datos…</div>
 
@@ -99,10 +108,16 @@ ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, LineElement
 const datos = ref(null)
 const cargando = ref(true)
 
-onMounted(async () => {
-  datos.value = await window.api.getInsights()
+const hoy = new Date().toISOString().slice(0, 10)
+const filtro = ref({ desde: '2000-01-01', hasta: hoy })
+
+async function cargar() {
+  cargando.value = true
+  datos.value = await window.api.getInsights({ desde: filtro.value.desde, hasta: filtro.value.hasta })
   cargando.value = false
-})
+}
+
+onMounted(cargar)
 
 const PALETA = ['#3498db','#e74c3c','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#34495e']
 
@@ -260,5 +275,25 @@ const optsBarSimple = {
 
 .stat-card--destacado {
   border: 2px solid var(--color-primary);
+}
+
+.filtro-fechas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.filtro-fechas label {
+  color: #666;
+  font-weight: 500;
+}
+
+.filtro-fechas input[type="date"] {
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  font-family: var(--font);
 }
 </style>

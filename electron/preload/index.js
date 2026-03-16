@@ -38,7 +38,9 @@ const api = {
   getHabitacionesLibres: () => ipcRenderer.invoke('getHabitacionesLibres'),
 
   // Insights
-  getInsights: () => ipcRenderer.invoke('getInsights'),
+  getInsights: (params) => ipcRenderer.invoke('getInsights', params),
+  getDbPath:   () => ipcRenderer.invoke('getDbPath'),
+  getBackups:  () => ipcRenderer.invoke('getBackups'),
 
   // Base de datos
   getRutaDB: () => ipcRenderer.invoke('getRutaDB'),

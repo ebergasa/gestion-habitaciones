@@ -42,6 +42,8 @@ export function registerHandlers() {
   ipcMain.handle('deleteLogo', h(() => config.deleteLogo()))
 
   ipcMain.handle('getRutaDB', h(() => config.getRutaDB()))
+  ipcMain.handle('getDbPath', h(() => db.getDbPath()))
+  ipcMain.handle('getBackups', h(() => db.getBackups()))
 
   ipcMain.handle('setRutaDB', h((_, ruta) => config.setRutaDB(ruta)))
 
@@ -90,7 +92,7 @@ export function registerHandlers() {
   ipcMain.handle('getHabitacionesLibres', h(() => db.getHabitacionesLibres()))
 
   // ── Insights ──────────────────────────────────────────────────────────────
-  ipcMain.handle('getInsights', h(() => db.getInsights()))
+  ipcMain.handle('getInsights', h((_e, params) => db.getInsights(params)))
 
   // ── Exportación Excel ─────────────────────────────────────────────────────
   ipcMain.handle('seleccionarRutaExcel', async () => {

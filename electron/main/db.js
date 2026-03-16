@@ -1,13 +1,36 @@
 import Database from 'better-sqlite3'
+import fs from 'fs'
+import path from 'path'
 
 let db
+let currentDbPath
 
 function normalizar(str) {
   if (!str) return ''
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
 }
 
+export function getDbPath() { return currentDbPath }
+
+export function getBackups() {
+  const backupsDir = path.join(path.dirname(currentDbPath), 'backups')
+  if (!fs.existsSync(backupsDir)) return []
+  return fs.readdirSync(backupsDir)
+    .filter(f => f.startsWith('db-') && f.endsWith('.sqlite'))
+    .sort().reverse()
+    .map(f => {
+      const stats = fs.statSync(path.join(backupsDir, f))
+      return {
+        nombre: f,
+        ruta: path.join(backupsDir, f),
+        tamano: stats.size,
+        fecha: stats.mtime.toISOString()
+      }
+    })
+}
+
 export function initDB(dbPath) {
+  currentDbPath = dbPath
   db = new Database(dbPath)
   db.pragma('journal_mode = WAL')
   db.pragma('foreign_keys = ON')
@@ -341,7 +364,12 @@ export function getHabitacionesLibres() {
 
 // ── Insights ──────────────────────────────────────────────────────────────────
 
-export function getInsights() {
+export function getInsights({ desde, hasta } = {}) {
+  const hoy = new Date().toISOString().slice(0, 10)
+  desde = desde || '2000-01-01'
+  hasta = hasta || hoy
+
+  // ── Métricas de estado actual (no afectadas por el filtro) ───────────────────
   const totalPlazas = db.prepare('SELECT SUM(capacidad) as total FROM habitaciones').get().total || 0
   const plazasOcupadas = db.prepare(
     'SELECT COUNT(*) as n FROM ocupaciones WHERE fecha_salida IS NULL'
@@ -351,11 +379,6 @@ export function getInsights() {
   const estanciaMedia = db.prepare(`
     SELECT AVG(JULIANDAY('now') - JULIANDAY(fecha_entrada)) as media
     FROM ocupaciones WHERE fecha_salida IS NULL
-  `).get().media || 0
-
-  const estanciaMediaHistorica = db.prepare(`
-    SELECT AVG(JULIANDAY(fecha_salida) - JULIANDAY(fecha_entrada)) as media
-    FROM ocupaciones WHERE fecha_salida IS NOT NULL
   `).get().media || 0
 
   const altasMes = db.prepare(`
@@ -376,27 +399,34 @@ export function getInsights() {
     GROUP BY h.planta
   `).all()
 
+  // ── Métricas históricas (filtradas por desde/hasta) ──────────────────────────
+  const estanciaMediaHistorica = db.prepare(`
+    SELECT AVG(JULIANDAY(fecha_salida) - JULIANDAY(fecha_entrada)) as media
+    FROM ocupaciones WHERE fecha_salida BETWEEN ? AND ?
+  `).get(desde, hasta).media || 0
+
   const entradas = db.prepare(`
     SELECT strftime('%Y-%m', fecha_entrada) as mes, COUNT(*) as n
     FROM ocupaciones
-    WHERE fecha_entrada >= date('now', '-12 months')
+    WHERE fecha_entrada BETWEEN ? AND ?
     GROUP BY mes ORDER BY mes
-  `).all()
+  `).all(desde, hasta)
 
   const salidas = db.prepare(`
     SELECT strftime('%Y-%m', fecha_salida) as mes, COUNT(*) as n
     FROM ocupaciones
-    WHERE fecha_salida IS NOT NULL AND fecha_salida >= date('now', '-12 months')
+    WHERE fecha_salida BETWEEN ? AND ?
     GROUP BY mes ORDER BY mes
-  `).all()
+  `).all(desde, hasta)
 
   const motivosSalida = db.prepare(`
     SELECT m.id, m.nombre, COUNT(o.id) as total
     FROM motivos_alta m
     JOIN ocupaciones o ON o.motivo_alta_id = m.id
+    WHERE o.fecha_salida BETWEEN ? AND ?
     GROUP BY m.id
     ORDER BY total DESC
-  `).all()
+  `).all(desde, hasta)
 
   const distribucionEstancias = db.prepare(`
     SELECT
@@ -406,16 +436,16 @@ export function getInsights() {
       SUM(CASE WHEN dias >= 365 THEN 1 ELSE 0 END) as mas_anio
     FROM (
       SELECT JULIANDAY(fecha_salida) - JULIANDAY(fecha_entrada) as dias
-      FROM ocupaciones WHERE fecha_salida IS NOT NULL
+      FROM ocupaciones WHERE fecha_salida BETWEEN ? AND ?
     )
-  `).get()
+  `).get(desde, hasta)
 
   const evolucion = db.prepare(`
     WITH RECURSIVE meses(mes) AS (
-      SELECT strftime('%Y-%m', date('now', '-11 months'))
+      SELECT strftime('%Y-%m', ?)
       UNION ALL
       SELECT strftime('%Y-%m', date(mes || '-01', '+1 month'))
-      FROM meses WHERE mes < strftime('%Y-%m', 'now')
+      FROM meses WHERE mes < strftime('%Y-%m', ?)
     )
     SELECT m.mes,
       (SELECT COUNT(*) FROM ocupaciones o
@@ -424,7 +454,7 @@ export function getInsights() {
       ) as ocupados
     FROM meses m
     ORDER BY mes
-  `).all()
+  `).all(desde, hasta)
 
   return {
     totalPlazas,
@@ -438,7 +468,8 @@ export function getInsights() {
     salidas,
     motivosSalida,
     distribucionEstancias,
-    evolucion
+    evolucion,
+    filtro: { desde, hasta }
   }
 }
 

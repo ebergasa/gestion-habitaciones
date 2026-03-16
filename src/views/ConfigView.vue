@@ -39,8 +39,14 @@
         </div>
       </section>
 
+      <!-- ── Zona de peligro ──────────────────────────────────────────────── -->
+      <div class="zona-peligro-header">
+        <span class="zona-peligro-badge">⚠ Zona de peligro</span>
+        <p>Los cambios en estas secciones pueden afectar a los datos y al funcionamiento de la aplicación.</p>
+      </div>
+
       <!-- ── Configuración de habitaciones ────────────────────────────────── -->
-      <section class="config-section">
+      <section class="config-section config-section--peligro">
         <h2 class="config-section-title">Habitaciones</h2>
         <p style="font-size:12px; color:#888; margin-bottom:14px;">
           Define qué habitaciones son dobles (2 plazas). El resto se consideran individuales (1 plaza).
@@ -111,7 +117,7 @@
       </section>
 
       <!-- ── Base de datos ─────────────────────────────────────────────────── -->
-      <section class="config-section">
+      <section class="config-section config-section--peligro">
         <h2 class="config-section-title">Base de datos</h2>
         <p style="font-size:12px; color:#888; margin-bottom:14px;">
           Ruta del fichero <code>gestion-habitaciones.sqlite</code>. Por defecto se guarda en la misma carpeta que el ejecutable, lo que permite copiar ambos ficheros juntos a cualquier equipo o unidad de red.
@@ -147,10 +153,42 @@
         <p style="font-size:11px; color:#999; margin-top:10px;">
           La aplicación se reiniciará al aplicar el cambio. Si el fichero no existe en la nueva ubicación se creará uno vacío.
         </p>
+
+        <div class="form-group" style="max-width:560px; margin-top:16px;">
+          <label>Ubicación actual del fichero</label>
+          <input type="text" :value="dbPath || '…'" readonly
+            style="background:#f9f9f9; color:#555; cursor:default; font-size:12px;" />
+        </div>
+
+        <div style="margin-top:20px;">
+          <h3 style="font-size:13px; font-weight:600; color:#333; margin-bottom:10px;">
+            Copias de seguridad disponibles
+          </h3>
+          <p style="font-size:12px; color:#888; margin-bottom:10px;">
+            Se crean automáticamente al arrancar la aplicación. Se conservan las 5 más recientes.
+          </p>
+          <div v-if="!backups.length" style="font-size:13px; color:#aaa;">Sin copias de seguridad.</div>
+          <table v-else style="width:100%; font-size:12px; border-collapse:collapse;">
+            <thead>
+              <tr style="background:#f0f4f8;">
+                <th style="text-align:left; padding:6px 10px; border-bottom:1px solid var(--color-border);">Fichero</th>
+                <th style="text-align:left; padding:6px 10px; border-bottom:1px solid var(--color-border);">Fecha</th>
+                <th style="text-align:right; padding:6px 10px; border-bottom:1px solid var(--color-border);">Tamaño</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="b in backups" :key="b.nombre" style="border-bottom:1px solid #f0f0f0;">
+                <td style="padding:6px 10px; font-family:monospace;">{{ b.nombre }}</td>
+                <td style="padding:6px 10px;">{{ formatFecha(b.fecha) }}</td>
+                <td style="padding:6px 10px; text-align:right;">{{ formatTamano(b.tamano) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- ── Motivos de salida ─────────────────────────────────────────────── -->
-      <section class="config-section">
+      <section class="config-section config-section--peligro">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
           <h2 class="config-section-title" style="margin:0;">Motivos de salida</h2>
           <button class="btn btn-primary btn-sm" @click="abrirFormulario(null)">+ Nuevo motivo</button>
@@ -232,6 +270,8 @@ onMounted(async () => {
   habStore.cargar()
   cargarMotivos()
   rutaDB.value = await window.api.getRutaDB()
+  dbPath.value = await window.api.getDbPath()
+  backups.value = await window.api.getBackups()
 })
 
 async function guardarNombre() {
@@ -279,6 +319,19 @@ function plantaLabel(p) {
 // ── Base de datos ─────────────────────────────────────────────────────────────
 const rutaDB = ref(null)
 const nuevaRutaDB = ref(null)  // null = sin cambio pendiente
+const dbPath = ref(null)
+const backups = ref([])
+
+function formatFecha(iso) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+    ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+}
+
+function formatTamano(bytes) {
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB'
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+}
 
 async function seleccionarCarpetaDB() {
   const ruta = await window.api.seleccionarCarpetaDB()
@@ -358,6 +411,42 @@ async function eliminar(m) {
   margin-bottom: 16px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--color-border);
+}
+
+.zona-peligro-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff8f8;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 10px 16px;
+}
+
+.zona-peligro-header p {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+
+.zona-peligro-badge {
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: #c0392b;
+  background: #fdecea;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 3px 10px;
+}
+
+.config-section--peligro {
+  border-color: #f5c6cb;
+}
+
+.config-section--peligro .config-section-title {
+  color: #c0392b;
+  border-bottom-color: #f5c6cb;
 }
 
 .logo-preview-area {
