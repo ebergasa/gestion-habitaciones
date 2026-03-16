@@ -57,6 +57,17 @@ function crearSchema() {
   `)
 }
 
+// Habitaciones individuales de primera planta (resto son dobles)
+const INDIVIDUALES_PRIMERA = new Set([
+  // Ala izquierda (col izq, verdes)
+  104, 107, 110, 113, 116,
+  // Corredor sur (fila inf, verdes)
+  120, 123, 126, 129, 132, 135,
+  // Ala derecha (col ext, verdes)
+  139, 142, 145, 148, 151, 154,
+  // Corredor norte: ninguna individual
+])
+
 function seedHabitaciones() {
   const count = db.prepare('SELECT COUNT(*) as n FROM habitaciones').get()
   if (count.n > 0) return
@@ -67,25 +78,29 @@ function seedHabitaciones() {
 
   const insertMany = db.transaction((habitaciones) => {
     for (const h of habitaciones) {
-      insert.run(h.numero, h.planta, 'individual', 1)
+      insert.run(h.numero, h.planta, h.tipo, h.capacidad)
     }
   })
 
   const habitaciones = []
 
-  // Planta Baja: 1–13
+  // Planta Baja: 1–13 (la 13 es individual)
   for (let i = 1; i <= 13; i++) {
-    habitaciones.push({ numero: String(i), planta: 'baja' })
+    const individual = i === 13
+    habitaciones.push({ numero: String(i), planta: 'baja', tipo: individual ? 'individual' : 'doble', capacidad: individual ? 1 : 2 })
   }
 
   // Primera Planta: 101–175
   for (let i = 101; i <= 175; i++) {
-    habitaciones.push({ numero: String(i), planta: 'primera' })
+    const individual = INDIVIDUALES_PRIMERA.has(i)
+    habitaciones.push({ numero: String(i), planta: 'primera', tipo: individual ? 'individual' : 'doble', capacidad: individual ? 1 : 2 })
   }
 
-  // Segunda Planta: 201–239
+  // Segunda Planta: 201–239 (individuales: 201, 227, 228)
+  const INDIVIDUALES_SEGUNDA = new Set([201, 227, 228])
   for (let i = 201; i <= 239; i++) {
-    habitaciones.push({ numero: String(i), planta: 'segunda' })
+    const individual = INDIVIDUALES_SEGUNDA.has(i)
+    habitaciones.push({ numero: String(i), planta: 'segunda', tipo: individual ? 'individual' : 'doble', capacidad: individual ? 1 : 2 })
   }
 
   insertMany(habitaciones)

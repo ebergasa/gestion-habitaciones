@@ -24,7 +24,7 @@
             <div class="residente-info">
               <strong>{{ oc.apellidos }}, {{ oc.nombre }}</strong>
               <span class="detalle">DNI: {{ oc.dni || '—' }}</span>
-              <span class="detalle">Entrada: {{ oc.fecha_entrada }}</span>
+              <span class="detalle">Entrada: {{ fmtFecha(oc.fecha_entrada) }}</span>
             </div>
             <button class="btn btn-sm btn-danger" @click="iniciarAlta(oc)">
               Registrar salida
@@ -114,6 +114,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useHabitacionesStore } from '@/stores/habitaciones'
 import { useResidentesStore } from '@/stores/residentes'
 import { normalizar } from '@/utils/normalizar.js'
+import { fmtFecha } from '@/utils/fecha.js'
 
 const props = defineProps({
   habitacion: Object

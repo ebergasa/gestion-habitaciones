@@ -124,6 +124,23 @@ gestion-habitaciones/
 └── package.json
 ```
 
+## Datos de prueba
+
+El script `scripts/seed-demo.cjs` genera una base de datos sintética completa para desarrollo y pruebas:
+
+| Dato | Cantidad |
+|---|---|
+| Habitaciones | 127 (tipos y capacidades reales) |
+| Motivos de alta | 6 |
+| Residentes | 550 |
+| Ocupaciones | ~750 (2 años de historial, mar 2024 – mar 2026) |
+
+```bash
+node scripts/seed-demo.cjs
+```
+
+> **Peligro:** el script **borra irreversiblemente** la base de datos actual antes de cargar los datos sintéticos. Pedirá confirmación explícita escribiendo `si` antes de proceder. No ejecutar en entornos con datos reales.
+
 ## Ruta de la base de datos
 
 Por defecto: carpeta de datos de usuario del sistema operativo.

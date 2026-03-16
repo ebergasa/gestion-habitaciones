@@ -29,35 +29,75 @@
       class="habitacion-rect"
       @click="$emit('clickHabitacion', room.numero)"
     >
-      <rect
-        :x="room.x" :y="room.y" :width="room.w" :height="room.h"
-        :fill="colorDeHabitacion(room.numero)"
-        :stroke="strokeDeHabitacion(room.numero)"
-        stroke-width="1.5" rx="3"
-      />
+      <!-- OCUPADA: fondo blanco + banda de color solo en la zona del número -->
+      <template v-if="lineasResidente(room.numero).length">
+        <clipPath :id="`clip-${room.numero}`">
+          <rect :x="room.x" :y="room.y" :width="room.w" :height="room.h" rx="3" />
+        </clipPath>
 
-      <!-- Número: ocupa el tercio superior si hay residente, centrado si está libre -->
-      <text
-        :x="room.x + room.w / 2"
-        :y="room.y + (lineasResidente(room.numero).length ? room.h * 0.3 : room.h * 0.5)"
-        text-anchor="middle" dominant-baseline="middle"
-        :fill="textoColor(room.numero)"
-        :font-size="numFontSize(room)"
-        font-weight="bold"
-      >{{ room.numero }}</text>
+        <!-- Fondo blanco del recuadro completo -->
+        <rect
+          :x="room.x" :y="room.y" :width="room.w" :height="room.h"
+          fill="white" :stroke="strokeDeHabitacion(room.numero)"
+          stroke-width="1.5" rx="3"
+        />
 
-      <!-- Nombre del/los residente(s): una línea por residente -->
-      <text
-        v-for="(linea, i) in lineasResidente(room.numero)"
-        :key="'n' + i"
-        :x="room.x + room.w / 2"
-        :y="room.y + room.h * 0.58 + i * room.h * 0.23"
-        text-anchor="middle" dominant-baseline="middle"
-        :fill="textoColor(room.numero)"
-        :font-size="nombreFontSize(room)"
-        :textLength="room.w - 8"
-        lengthAdjust="spacingAndGlyphs"
-      >{{ linea }}</text>
+        <!-- Banda de color solo arriba (respeta las esquinas redondeadas) -->
+        <rect
+          :clip-path="`url(#clip-${room.numero})`"
+          :x="room.x" :y="room.y"
+          :width="room.w" :height="headerH(room)"
+          :fill="colorBanda(room.numero)"
+        />
+
+        <!-- Línea separadora fina -->
+        <line
+          :x1="room.x + 1" :y1="room.y + headerH(room)"
+          :x2="room.x + room.w - 1" :y2="room.y + headerH(room)"
+          stroke="#ccc" stroke-width="0.8"
+        />
+
+        <!-- Número en la banda -->
+        <text
+          :x="room.x + room.w / 2"
+          :y="room.y + headerH(room) / 2"
+          text-anchor="middle" dominant-baseline="middle"
+          :fill="textoColorBanda(room.numero)"
+          :font-size="numFontSize(room)"
+          font-weight="bold"
+        >{{ room.numero }}</text>
+
+        <!-- Nombre(s) del/los residente(s) -->
+        <text
+          v-for="(linea, i) in lineasResidente(room.numero)"
+          :key="'n' + i"
+          :x="room.x + room.w / 2"
+          :y="residenteY(room, i)"
+          text-anchor="middle" dominant-baseline="middle"
+          fill="#222"
+          :font-size="nombreFontSize(room)"
+          :textLength="room.w - 8"
+          lengthAdjust="spacingAndGlyphs"
+        >{{ linea }}</text>
+      </template>
+
+      <!-- LIBRE: recuadro completamente coloreado, número centrado -->
+      <template v-else>
+        <rect
+          :x="room.x" :y="room.y" :width="room.w" :height="room.h"
+          :fill="colorDeHabitacion(room.numero)"
+          :stroke="strokeDeHabitacion(room.numero)"
+          stroke-width="1.5" rx="3"
+        />
+        <text
+          :x="room.x + room.w / 2"
+          :y="room.y + room.h / 2"
+          text-anchor="middle" dominant-baseline="middle"
+          :fill="textoColor(room.numero)"
+          :font-size="numFontSize(room)"
+          font-weight="bold"
+        >{{ room.numero }}</text>
+      </template>
     </g>
 
     <!-- Labels -->
@@ -101,20 +141,45 @@ function textoColor(numero) {
   return colorDeHabitacion(numero) === '#FFFFFF' ? '#222' : 'white'
 }
 
+// Banda de color para la zona del número en habitaciones ocupadas.
+// Llena (#FFFFFF) → gris claro para que se distinga del fondo blanco.
+function colorBanda(numero) {
+  const c = colorDeHabitacion(numero)
+  return c === '#FFFFFF' ? '#e0e0e0' : c
+}
+
+function textoColorBanda(numero) {
+  return colorDeHabitacion(numero) === '#FFFFFF' ? '#333' : 'white'
+}
+
+// Altura de la banda del número (proporcional al tamaño de fuente)
+function headerH(room) {
+  return Math.max(12, numFontSize(room) * 1.5)
+}
+
+// Y centrada de cada residente en la zona inferior
+function residenteY(room, i) {
+  const n = lineasResidente(room.numero).length
+  const areaTop = room.y + headerH(room)
+  const areaH   = room.h - headerH(room)
+  return areaTop + areaH * ((i + 1) / (n + 1))
+}
+
 // Líneas de texto para los residentes: "Apellidos Nombre"
 function lineasResidente(numero) {
   const h = mapaHabitaciones.value[numero]
   if (!h || !h.ocupaciones.length) return []
   return h.ocupaciones.map(o => {
-    const ap = o.apellidos || ''
     const nb = o.nombre || ''
-    return `${ap} ${nb}`.trim()
+    const ap = o.apellidos || ''
+    return `${nb} ${ap}`.trim()
   })
 }
 
 function numFontSize(room) {
   const base = Math.min(room.w, room.h)
-  return Math.max(9, base * 0.26)
+  const size = lineasResidente(room.numero).length ? base * 0.20 : base * 0.26
+  return Math.max(8, size)
 }
 
 function nombreFontSize(room) {

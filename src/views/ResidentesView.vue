@@ -48,7 +48,7 @@
               </span>
               <span v-else class="badge badge-libre">Sin asignar</span>
             </td>
-            <td>{{ r.fecha_entrada || '—' }}</td>
+            <td>{{ fmtFecha(r.fecha_entrada) }}</td>
             <td style="white-space:nowrap;">
               <button class="btn btn-sm btn-outline" @click="abrirFormulario(r)">Editar</button>
               <button
@@ -107,6 +107,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useResidentesStore } from '@/stores/residentes'
 import { normalizar } from '@/utils/normalizar.js'
+import { fmtFecha } from '@/utils/fecha.js'
 
 const store = useResidentesStore()
 const busqueda = ref('')

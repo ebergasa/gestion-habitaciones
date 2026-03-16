@@ -68,9 +68,9 @@
             <td>{{ oc.apellidos }}, {{ oc.nombre }}</td>
             <td>{{ oc.dni || '—' }}</td>
             <td>{{ oc.codigo_externo || '—' }}</td>
-            <td>{{ oc.fecha_entrada }}</td>
+            <td>{{ fmtFecha(oc.fecha_entrada) }}</td>
             <td>
-              <span v-if="oc.fecha_salida">{{ oc.fecha_salida }}</span>
+              <span v-if="oc.fecha_salida">{{ fmtFecha(oc.fecha_salida) }}</span>
               <span v-else class="badge badge-ocupada">Activa</span>
             </td>
             <td>{{ oc.motivo_nombre || '—' }}</td>
@@ -87,6 +87,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { fmtFecha } from '@/utils/fecha.js'
 
 const historial = ref([])
 const motivos = ref([])

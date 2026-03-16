@@ -38,7 +38,7 @@
           <div v-for="r in resultadoHab.actual" :key="r.ocupacion_id" class="search-result-card">
             <strong>{{ r.apellidos }}, {{ r.nombre }}</strong>
             <div style="font-size:12px; color:#666; margin-top:4px;">
-              DNI: {{ r.dni || '—' }} · Entrada: {{ r.fecha_entrada }}
+              DNI: {{ r.dni || '—' }} · Entrada: {{ fmtFecha(r.fecha_entrada) }}
             </div>
           </div>
         </div>
@@ -61,8 +61,8 @@
               <tr v-for="h in resultadoHab.historial" :key="h.id">
                 <td>{{ h.apellidos }}, {{ h.nombre }}</td>
                 <td>{{ h.dni || '—' }}</td>
-                <td>{{ h.fecha_entrada }}</td>
-                <td>{{ h.fecha_salida || '—' }}</td>
+                <td>{{ fmtFecha(h.fecha_entrada) }}</td>
+                <td>{{ fmtFecha(h.fecha_salida) }}</td>
                 <td>{{ h.motivo_nombre || '—' }}</td>
                 <td>{{ h.notas || '' }}</td>
               </tr>
@@ -83,7 +83,7 @@
           </h3>
           <div style="font-size:12px; color:#666; margin-bottom:10px;">
             DNI: {{ r.dni || '—' }} · Cód. residente: {{ r.codigo_externo || '—' }}
-            <span v-if="r.fecha_entrada"> · Entrada: {{ r.fecha_entrada }}</span>
+            <span v-if="r.fecha_entrada"> · Entrada: {{ fmtFecha(r.fecha_entrada) }}</span>
           </div>
 
           <div v-if="r.historial.length">
@@ -102,8 +102,8 @@
                 <tr v-for="h in r.historial" :key="h.id">
                   <td>{{ h.habitacion_numero }}</td>
                   <td>{{ plantaLabel(h.planta) }}</td>
-                  <td>{{ h.fecha_entrada }}</td>
-                  <td>{{ h.fecha_salida || '—' }}</td>
+                  <td>{{ fmtFecha(h.fecha_entrada) }}</td>
+                  <td>{{ fmtFecha(h.fecha_salida) }}</td>
                   <td>{{ h.motivo_nombre || '—' }}</td>
                 </tr>
               </tbody>
@@ -148,6 +148,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { fmtFecha } from '@/utils/fecha.js'
 
 const modo = ref('habitacion')
 const query = ref('')
