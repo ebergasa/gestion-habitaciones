@@ -2,10 +2,10 @@
 // viewBox 1500×860 → ratio 1.74, encaja en A4 landscape 10mm márgenes sin cortes
 //
 // Distribución:
-//   Ala izquierda  (101-118) — columna exterior simple + columna interior doble alto
-//   Corredor sur   (119-136) — dos filas horizontales, parte inferior
-//   Ala derecha    (137-157) — columna interior doble alto + columna exterior simple
-//   Corredor norte (158-175) — dos filas horizontales, parte superior
+//   Ala sur      (101-118) — columna exterior simple + columna interior doble alto
+//   Corredor este (119-136) — dos filas horizontales, parte inferior
+//   Ala norte    (137-157) — columna interior doble alto + columna exterior simple
+//   Corredor oeste (158-175) — dos filas horizontales, parte superior
 
 export const viewBox = '0 0 1500 860'
 
@@ -35,10 +35,10 @@ const COR_X         = 263   // x donde empieza el primer hueco de los corredores
 const ALA_DER_X_EXT = 1500 - 10 - ALA_W             // x columna exterior ala derecha (= 1400)
 const ALA_DER_X_INT = ALA_DER_X_EXT - ALA_W - GAP   // x columna interior ala derecha (= 1307)
 
-const COR_NOR_Y     = 8     // y fila superior corredor norte
-const COR_SUR_Y     = 692   // y fila superior corredor sur
+const COR_NOR_Y     = 8     // y fila superior corredor oeste
+const COR_SUR_Y     = 692   // y fila superior corredor este
 
-// ── Ala izquierda (101-118) ───────────────────────────────────────────────────
+// ── Ala sur (101-118) ────────────────────────────────────────────────────────
 // Columna exterior — 12 hab simples, de arriba a abajo:
 const alaIzqExt = [101, 102, 104, 105, 107, 108, 110, 111, 113, 114, 116, 117]
 // Columna interior —  6 hab dobles, de arriba a abajo:
@@ -52,7 +52,7 @@ for (let i = 0; i < alaIzqInt.length; i++) {
   alaIzq.push({ numero: String(alaIzqInt[i]), x: ALA_IZQ_X + ALA_IZQ_W + GAP, y: ALA_IZQ_Y + i * (ALA_H2 + GAP), w: ALA_IZQ_W, h: ALA_H2 })
 }
 
-// ── Corredor sur (119-136) ────────────────────────────────────────────────────
+// ── Corredor este (119-136) ───────────────────────────────────────────────────
 // Fila superior —  6 hab dobles, de izq a der:
 const corSurSup = [121, 124, 127, 130, 133, 136]
 // Fila inferior — 12 hab simples, de izq a der:
@@ -66,7 +66,7 @@ for (let i = 0; i < corSurInf.length; i++) {
   corridorBottom.push({ numero: String(corSurInf[i]), x: COR_X + i * (COR_W  + GAP), y: COR_SUR_Y + COR_H + GAP, w: COR_W,  h: COR_H })
 }
 
-// ── Ala derecha (137-157) ─────────────────────────────────────────────────────
+// ── Ala norte (137-157) ──────────────────────────────────────────────────────
 // Columna exterior — 15 hab simples, de arriba a abajo:
 //   (157 queda sola en la parte superior; 138 y 137 solas en la inferior)
 const alaDerExt = [157, 155, 154, 152, 151, 149, 148, 146, 145, 143, 142, 140, 139, 138, 137]
@@ -82,7 +82,7 @@ for (let i = 0; i < alaDerInt.length; i++) {
   alaDer.push({ numero: String(alaDerInt[i]), x: ALA_DER_X_INT, y: ALA_DER_Y + (ALA_H + GAP) + i * (ALA_H2 + GAP), w: ALA_W, h: ALA_H2 })
 }
 
-// ── Corredor norte (158-175) ──────────────────────────────────────────────────
+// ── Corredor oeste (158-175) ─────────────────────────────────────────────────
 // Fila superior — 12 hab simples, de izq a der:
 const corNorSup = [174, 173, 171, 170, 168, 167, 165, 164, 162, 161, 159, 158]
 // Fila inferior —  6 hab dobles, de izq a der:
@@ -102,10 +102,10 @@ export const zones = []
 
 export const labels = [
   { text: 'PRIMERA PLANTA', x: 778,  y: 430, fontSize: 28, fontWeight: 'bold', color: '#e0e0e0' },
-  { text: 'Ala Izquierda',  x: 132,  y: 140, fontSize: 10, color: '#aaa' },
-  { text: 'Ala Derecha',    x: 1400, y: 90, fontSize: 10, color: '#aaa' },
-  { text: 'Corredor Norte', x: 778,  y: 5,   fontSize: 10, color: '#aaa' },
-  { text: 'Corredor Sur',   x: 778,  y: 685, fontSize: 10, color: '#aaa' },
+  { text: 'Ala Sur',        x: 132,  y: 85, fontSize: 10, color: '#aaa' },
+  { text: 'Ala Norte',      x: 1400, y: 85, fontSize: 10, color: '#aaa' },
+  { text: 'Corredor Oeste', x: 778,  y: 5,   fontSize: 10, color: '#aaa' },
+  { text: 'Corredor Este',  x: 778,  y: 685, fontSize: 10, color: '#aaa' },
 ]
 
 export const walls = []

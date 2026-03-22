@@ -54,12 +54,11 @@ const APELLIDOS = [
 ]
 
 const MOTIVOS = [
-  'Fallecimiento',
-  'Alta voluntaria',
-  'Traslado a otro centro',
-  'Cambio de habitación',
-  'Alta médica',
-  'Traslado familiar',
+  'Alta',
+  'Cambio',
+  'Baja',
+  'Exitus',
+  'Otros'
 ]
 
 const NOTAS_POOL = [

@@ -82,13 +82,13 @@ function crearSchema() {
 
 // Habitaciones individuales de primera planta (resto son dobles)
 const INDIVIDUALES_PRIMERA = new Set([
-  // Ala izquierda (col izq, verdes)
+  // Ala sur (col izq, verdes)
   104, 107, 110, 113, 116,
-  // Corredor sur (fila inf, verdes)
+  // Corredor este (fila inf, verdes)
   120, 123, 126, 129, 132, 135,
-  // Ala derecha (col ext, verdes)
+  // Ala norte (col ext, verdes)
   139, 142, 145, 148, 151, 154,
-  // Corredor norte: ninguna individual
+  // Corredor oeste: ninguna individual
 ])
 
 function seedHabitaciones() {

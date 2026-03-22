@@ -1,8 +1,8 @@
 // Segunda Planta: habitaciones 201-239 (39 habitaciones)
 // Layout perimetral con 4 zonas:
-//   Ala izquierda  (201-212): 2 columnas × 6 filas, lado izquierdo
+//   Ala sur        (201-212): 2 columnas × 6 filas, lado izquierdo
 //   Corredor inferior (213-224): 2 filas × 6 columnas, parte inferior
-//   Ala derecha    (228-239): 2 columnas × 6 filas, lado derecho
+//   Ala norte      (228-239): 2 columnas × 6 filas, lado derecho
 //   Corredor superior Asistidos (225-227): 3 habitaciones en zona especializada
 
 export const viewBox = '0 0 1100 600'
@@ -11,7 +11,7 @@ const RW = 100   // ancho habitación
 const RH = 52   // alto habitación
 const G  = 3    // gap entre habitaciones
 
-// — Ala izquierda (201-212): columna izquierda 201-206, columna derecha 207-212 —
+// — Ala sur (201-212): columna izquierda 201-206, columna derecha 207-212 —
 const ALA_IZQ_Y = 120
 const alaIzq = []
 for (let i = 0; i < 6; i++) {
@@ -28,7 +28,7 @@ for (let i = 0; i < 6; i++) {
   corridorBottom.push({ numero: String(219 + i), x: COR_SUR_X + i * (COR_SUR_W + G), y: 490 + RH + G, w: COR_SUR_W, h: RH })
 }
 
-// — Ala derecha (225-239) —
+// — Ala norte (225-239) —
 // Columna exterior (9 hab, de arriba a abajo): 239, 237, 235, 233, 231, 229, 227, 226, 225
 // Columna interior (6 hab, empieza una fila más abajo): 238, 236, 234, 232, 230, 228
 const xDer1 = 1100 - 10 - 2 * RW - G   // columna interior (= 957)
@@ -58,9 +58,9 @@ export const zones = [
 
 export const labels = [
   { text: 'SEGUNDA PLANTA', x: 550, y: 310, fontSize: 26, fontWeight: 'bold', color: '#e0e0e0' },
-  { text: 'Ala Izquierda',  x: 78,  y: 128, fontSize: 10, color: '#aaa' },
-  { text: 'Ala Derecha',    x: 900, y: 110, fontSize: 10, color: '#aaa' },
-  { text: 'Corredor Sur',   x: 550, y: 483, fontSize: 10, color: '#aaa' },
+  { text: 'Ala Sur',        x: 78,  y: 110, fontSize: 10, color: '#aaa' },
+  { text: 'Ala Norte',      x: 900, y: 110, fontSize: 10, color: '#aaa' },
+  { text: 'Corredor Este',  x: 550, y: 483, fontSize: 10, color: '#aaa' },
 ]
 
 export const walls = []

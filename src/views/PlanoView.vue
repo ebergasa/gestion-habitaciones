@@ -79,6 +79,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useHabitacionesStore } from '@/stores/habitaciones'
 import { useConfigStore } from '@/stores/config.js'
 import PlantaBaja from '@/components/planos/PlantaBaja.vue'
@@ -90,7 +91,7 @@ const store = useHabitacionesStore()
 const cfg = useConfigStore()
 const planta = ref('primera')
 const habitacionSeleccionada = ref(null)
-const { cargando, stats } = store
+const { cargando, stats } = storeToRefs(store)
 
 const plantaActualLabel = computed(() =>
   ({ baja: 'Planta Baja', primera: 'Primera Planta', segunda: 'Segunda Planta' })[planta.value]
