@@ -115,6 +115,10 @@ async function onActualizado() {
 }
 
 function imprimir() {
+  // TODO: en macOS algunos drivers de impresora lanzan el error
+  // "Changing the setting of Select Color to Gray Scale would cause a conflict".
+  // Solución: reemplazar window.print() por un IPC a webContents.print({ color: true })
+  // para evitar el diálogo nativo de macOS.
   window.print()
 }
 </script>

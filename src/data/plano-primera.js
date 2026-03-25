@@ -13,30 +13,30 @@ export const viewBox = '0 0 1500 860'
 
 const GAP    = 3    // separación entre habitaciones
 
-const ALA_W     = 90    // ancho de habitación en el ala derecha
-const ALA_IZQ_W = 120   // ancho de habitación en el ala izquierda
-const ALA_H  = 42   // alto de habitación simple en las alas
+const ALA_W     = 210    // ancho de habitación en el ala derecha
+const ALA_IZQ_W = 200   // ancho de habitación en el ala izquierda
+const ALA_H  = 45   // alto de habitación simple en las alas
 const ALA_H2 = ALA_H * 2 + GAP   // alto de habitación doble (= 87px)
 
-const COR_W  = 83   // ancho de habitación simple en los corredores (12 cols: 12×83+11×3 = 1029px)
-const COR_H  = 65   // alto de habitación en los corredores
+const COR_W  = 100   // ancho de habitación simple en los corredores (12 cols: 12×83+11×3 = 1029px)
+const COR_H  = 67   // alto de habitación en los corredores
 const COR_W2 = COR_W * 2 + GAP   // ancho de habitación doble (= 169px)
 
 // ── Posiciones de origen de cada sección ─────────────────────────────────────
 
-const ALA_IZQ_Y     = 148   // y donde empieza el ala izquierda
-const ALA_DER_Y     = 104   // y donde empieza el ala derecha
+const ALA_IZQ_Y     = 143   // y donde empieza el ala izquierda
+const ALA_DER_Y     = 97   // y donde empieza el ala derecha
 
 const ALA_IZQ_X     = 10    // x columna exterior ala izquierda
                              // columna interior = ALA_IZQ_X + ALA_IZQ_W + GAP = 133
 
-const COR_X         = 263   // x donde empieza el primer hueco de los corredores (justo después del ala izq: 10+120+3+120+10)
+const COR_X         = 30   // x donde empieza el primer hueco de los corredores (justo después del ala izq: 10+120+3+120+10)
 
 const ALA_DER_X_EXT = 1500 - 10 - ALA_W             // x columna exterior ala derecha (= 1400)
 const ALA_DER_X_INT = ALA_DER_X_EXT - ALA_W - GAP   // x columna interior ala derecha (= 1307)
 
-const COR_NOR_Y     = 8     // y fila superior corredor oeste
-const COR_SUR_Y     = 692   // y fila superior corredor este
+const COR_NOR_Y     = 3     // y fila superior corredor oeste
+const COR_SUR_Y     = 720   // y fila superior corredor este
 
 // ── Ala sur (101-118) ────────────────────────────────────────────────────────
 // Columna exterior — 12 hab simples, de arriba a abajo:
