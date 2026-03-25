@@ -13,90 +13,94 @@ export const viewBox = '0 0 1500 860'
 
 const GAP    = 3    // separación entre habitaciones
 
-const ALA_W     = 210    // ancho de habitación en el ala derecha
-const ALA_IZQ_W = 200   // ancho de habitación en el ala izquierda
-const ALA_H  = 45   // alto de habitación simple en las alas
-const ALA_H2 = ALA_H * 2 + GAP   // alto de habitación doble (= 87px)
+const ALA_NORTE_W  = 210  // ancho de habitación en el ala norte
+const ALA_SUR_W    = 200  // ancho de habitación en el ala sur
+const ALA_SUR_H    = 45   // alto de habitación simple en el ala sur
+const ALA_SUR_H2   = ALA_SUR_H * 2 + GAP   // alto de habitación doble ala sur
+const ALA_NORTE_EXT_H  = 53   // alto de habitación simple en el ala norte (col exterior: 157,155,…)
+const ALA_NORTE_INT_H  = 45   // alto de habitación simple en el ala norte (col interior: 156,153,…)
+const ALA_NORTE_INT_H2 = ALA_NORTE_INT_H * 2 + GAP // alto de habitación doble ala norte (col interior)
 
-const COR_W  = 100   // ancho de habitación simple en los corredores (12 cols: 12×83+11×3 = 1029px)
+const COR_W  = 100   // ancho de habitación simple en los corredores
 const COR_H  = 67   // alto de habitación en los corredores
 const COR_W2 = COR_W * 2 + GAP   // ancho de habitación doble (= 169px)
 
 // ── Posiciones de origen de cada sección ─────────────────────────────────────
 
-const ALA_IZQ_Y     = 143   // y donde empieza el ala izquierda
-const ALA_DER_Y     = 97   // y donde empieza el ala derecha
+const ALA_SUR_Y       = 143  // y donde empieza el ala sur
+const ALA_NORTE_EXT_Y = 10   // y donde empieza la col exterior del ala norte
+const ALA_NORTE_INT_Y = 142   // y donde empieza la col interior del ala norte
 
-const ALA_IZQ_X     = 10    // x columna exterior ala izquierda
-                             // columna interior = ALA_IZQ_X + ALA_IZQ_W + GAP = 133
+const ALA_SUR_X       = 10   // x columna exterior ala sur
+                              // columna interior = ALA_SUR_X + ALA_SUR_W + GAP = 213
 
-const COR_X         = 30   // x donde empieza el primer hueco de los corredores (justo después del ala izq: 10+120+3+120+10)
+const COR_X           = 30   // x donde empieza el primer hueco de los corredores
 
-const ALA_DER_X_EXT = 1500 - 10 - ALA_W             // x columna exterior ala derecha (= 1400)
-const ALA_DER_X_INT = ALA_DER_X_EXT - ALA_W - GAP   // x columna interior ala derecha (= 1307)
+const ALA_NORTE_X_EXT = 1500 - 10 - ALA_NORTE_W             // x columna exterior ala norte (= 1280)
+const ALA_NORTE_X_INT = ALA_NORTE_X_EXT - ALA_NORTE_W - GAP // x columna interior ala norte (= 1067)
 
-const COR_NOR_Y     = 3     // y fila superior corredor oeste
-const COR_SUR_Y     = 720   // y fila superior corredor este
+const COR_OESTE_Y     = 3    // y fila superior corredor oeste
+const COR_ESTE_Y      = 720  // y fila superior corredor este
 
-// ── Ala sur (101-118) ────────────────────────────────────────────────────────
+// ── Ala Sur (101-118) ────────────────────────────────────────────────────────
 // Columna exterior — 12 hab simples, de arriba a abajo:
-const alaIzqExt = [101, 102, 104, 105, 107, 108, 110, 111, 113, 114, 116, 117]
+const alaSurExt = [101, 102, 104, 105, 107, 108, 110, 111, 113, 114, 116, 117]
 // Columna interior —  6 hab dobles, de arriba a abajo:
-const alaIzqInt = [103, 106, 109, 112, 115, 118]
+const alaSurInt = [103, 106, 109, 112, 115, 118]
 
-const alaIzq = []
-for (let i = 0; i < alaIzqExt.length; i++) {
-  alaIzq.push({ numero: String(alaIzqExt[i]), x: ALA_IZQ_X,                   y: ALA_IZQ_Y + i * (ALA_H  + GAP), w: ALA_IZQ_W, h: ALA_H  })
+const alaSur = []
+for (let i = 0; i < alaSurExt.length; i++) {
+  alaSur.push({ numero: String(alaSurExt[i]), x: ALA_SUR_X,                   y: ALA_SUR_Y + i * (ALA_SUR_H  + GAP), w: ALA_SUR_W, h: ALA_SUR_H  })
 }
-for (let i = 0; i < alaIzqInt.length; i++) {
-  alaIzq.push({ numero: String(alaIzqInt[i]), x: ALA_IZQ_X + ALA_IZQ_W + GAP, y: ALA_IZQ_Y + i * (ALA_H2 + GAP), w: ALA_IZQ_W, h: ALA_H2 })
+for (let i = 0; i < alaSurInt.length; i++) {
+  alaSur.push({ numero: String(alaSurInt[i]), x: ALA_SUR_X + ALA_SUR_W + GAP, y: ALA_SUR_Y + i * (ALA_SUR_H2 + GAP), w: ALA_SUR_W, h: ALA_SUR_H2 })
 }
 
-// ── Corredor este (119-136) ───────────────────────────────────────────────────
+// ── Corredor Este (119-136) ──────────────────────────────────────────────────
 // Fila superior —  6 hab dobles, de izq a der:
-const corSurSup = [121, 124, 127, 130, 133, 136]
+const corEsteSup = [121, 124, 127, 130, 133, 136]
 // Fila inferior — 12 hab simples, de izq a der:
-const corSurInf = [119, 120, 122, 123, 125, 126, 128, 129, 131, 132, 134, 135]
+const corEsteInf = [119, 120, 122, 123, 125, 126, 128, 129, 131, 132, 134, 135]
 
-const corridorBottom = []
-for (let i = 0; i < corSurSup.length; i++) {
-  corridorBottom.push({ numero: String(corSurSup[i]), x: COR_X + i * (COR_W2 + GAP), y: COR_SUR_Y,                w: COR_W2, h: COR_H })
+const corEste = []
+for (let i = 0; i < corEsteSup.length; i++) {
+  corEste.push({ numero: String(corEsteSup[i]), x: COR_X + i * (COR_W2 + GAP), y: COR_ESTE_Y,                w: COR_W2, h: COR_H })
 }
-for (let i = 0; i < corSurInf.length; i++) {
-  corridorBottom.push({ numero: String(corSurInf[i]), x: COR_X + i * (COR_W  + GAP), y: COR_SUR_Y + COR_H + GAP, w: COR_W,  h: COR_H })
+for (let i = 0; i < corEsteInf.length; i++) {
+  corEste.push({ numero: String(corEsteInf[i]), x: COR_X + i * (COR_W  + GAP), y: COR_ESTE_Y + COR_H + GAP, w: COR_W,  h: COR_H })
 }
 
-// ── Ala norte (137-157) ──────────────────────────────────────────────────────
+// ── Ala Norte (137-157) ──────────────────────────────────────────────────────
 // Columna exterior — 15 hab simples, de arriba a abajo:
 //   (157 queda sola en la parte superior; 138 y 137 solas en la inferior)
-const alaDerExt = [157, 155, 154, 152, 151, 149, 148, 146, 145, 143, 142, 140, 139, 138, 137]
+const alaNorteExt = [157, 155, 154, 152, 151, 149, 148, 146, 145, 143, 142, 140, 139, 138, 137]
 // Columna interior —  6 hab dobles, de arriba a abajo:
 //   (empieza una fila más abajo, alineada con la segunda hab de la col exterior)
-const alaDerInt = [156, 153, 150, 147, 144, 141]
+const alaNorteInt = [156, 153, 150, 147, 144, 141]
 
-const alaDer = []
-for (let i = 0; i < alaDerExt.length; i++) {
-  alaDer.push({ numero: String(alaDerExt[i]), x: ALA_DER_X_EXT, y: ALA_DER_Y + i * (ALA_H  + GAP),                w: ALA_W, h: ALA_H  })
+const alaNorte = []
+for (let i = 0; i < alaNorteExt.length; i++) {
+  alaNorte.push({ numero: String(alaNorteExt[i]), x: ALA_NORTE_X_EXT, y: ALA_NORTE_EXT_Y + i * (ALA_NORTE_EXT_H  + GAP),                            w: ALA_NORTE_W, h: ALA_NORTE_EXT_H  })
 }
-for (let i = 0; i < alaDerInt.length; i++) {
-  alaDer.push({ numero: String(alaDerInt[i]), x: ALA_DER_X_INT, y: ALA_DER_Y + (ALA_H + GAP) + i * (ALA_H2 + GAP), w: ALA_W, h: ALA_H2 })
+for (let i = 0; i < alaNorteInt.length; i++) {
+  alaNorte.push({ numero: String(alaNorteInt[i]), x: ALA_NORTE_X_INT, y: ALA_NORTE_INT_Y + i * (ALA_NORTE_INT_H2 + GAP), w: ALA_NORTE_W, h: ALA_NORTE_INT_H2 })
 }
 
-// ── Corredor oeste (158-175) ─────────────────────────────────────────────────
+// ── Corredor Oeste (158-175) ─────────────────────────────────────────────────
 // Fila superior — 12 hab simples, de izq a der:
-const corNorSup = [174, 173, 171, 170, 168, 167, 165, 164, 162, 161, 159, 158]
+const corOesteSup = [174, 173, 171, 170, 168, 167, 165, 164, 162, 161, 159, 158]
 // Fila inferior —  6 hab dobles, de izq a der:
-const corNorInf = [175, 172, 169, 166, 163, 160]
+const corOesteInf = [175, 172, 169, 166, 163, 160]
 
-const corridorTop = []
-for (let i = 0; i < corNorSup.length; i++) {
-  corridorTop.push({ numero: String(corNorSup[i]), x: COR_X + i * (COR_W  + GAP), y: COR_NOR_Y,                w: COR_W,  h: COR_H })
+const corOeste = []
+for (let i = 0; i < corOesteSup.length; i++) {
+  corOeste.push({ numero: String(corOesteSup[i]), x: COR_X + i * (COR_W  + GAP), y: COR_OESTE_Y,                w: COR_W,  h: COR_H })
 }
-for (let i = 0; i < corNorInf.length; i++) {
-  corridorTop.push({ numero: String(corNorInf[i]), x: COR_X + i * (COR_W2 + GAP), y: COR_NOR_Y + COR_H + GAP, w: COR_W2, h: COR_H })
+for (let i = 0; i < corOesteInf.length; i++) {
+  corOeste.push({ numero: String(corOesteInf[i]), x: COR_X + i * (COR_W2 + GAP), y: COR_OESTE_Y + COR_H + GAP, w: COR_W2, h: COR_H })
 }
 
-export const rooms = [...alaIzq, ...corridorBottom, ...alaDer, ...corridorTop]
+export const rooms = [...alaSur, ...corEste, ...alaNorte, ...corOeste]
 
 export const zones = []
 
