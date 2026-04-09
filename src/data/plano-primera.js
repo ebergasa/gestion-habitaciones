@@ -32,12 +32,14 @@ const ALA_NORTE_EXT_Y = 10   // y donde empieza la col exterior del ala norte
 const ALA_NORTE_INT_Y = 142   // y donde empieza la col interior del ala norte
 
 const ALA_SUR_X       = 10   // x columna exterior ala sur
-                              // columna interior = ALA_SUR_X + ALA_SUR_W + GAP = 213
+const ALA_SUR_COL_GAP = 50   // separación entre columna exterior e interior del ala sur
+                              // columna interior = ALA_SUR_X + ALA_SUR_W + ALA_SUR_COL_GAP
 
 const COR_X           = 30   // x donde empieza el primer hueco de los corredores
 
-const ALA_NORTE_X_EXT = 1500 - 10 - ALA_NORTE_W             // x columna exterior ala norte (= 1280)
-const ALA_NORTE_X_INT = ALA_NORTE_X_EXT - ALA_NORTE_W - GAP // x columna interior ala norte (= 1067)
+const ALA_NORTE_COL_GAP = 50   // separación entre columna interior y exterior del ala norte
+const ALA_NORTE_X_EXT = 1500 - 10 - ALA_NORTE_W                        // x columna exterior ala norte (= 1280)
+const ALA_NORTE_X_INT = ALA_NORTE_X_EXT - ALA_NORTE_W - ALA_NORTE_COL_GAP // x columna interior ala norte
 
 const COR_OESTE_Y     = 3    // y fila superior corredor oeste
 const COR_ESTE_Y      = 720  // y fila superior corredor este
@@ -53,7 +55,7 @@ for (let i = 0; i < alaSurExt.length; i++) {
   alaSur.push({ numero: String(alaSurExt[i]), x: ALA_SUR_X,                   y: ALA_SUR_Y + i * (ALA_SUR_H  + GAP), w: ALA_SUR_W, h: ALA_SUR_H  })
 }
 for (let i = 0; i < alaSurInt.length; i++) {
-  alaSur.push({ numero: String(alaSurInt[i]), x: ALA_SUR_X + ALA_SUR_W + GAP, y: ALA_SUR_Y + i * (ALA_SUR_H2 + GAP), w: ALA_SUR_W, h: ALA_SUR_H2 })
+  alaSur.push({ numero: String(alaSurInt[i]), x: ALA_SUR_X + ALA_SUR_W + ALA_SUR_COL_GAP, y: ALA_SUR_Y + i * (ALA_SUR_H2 + GAP), w: ALA_SUR_W, h: ALA_SUR_H2 })
 }
 
 // ── Corredor Este (119-136) ──────────────────────────────────────────────────
