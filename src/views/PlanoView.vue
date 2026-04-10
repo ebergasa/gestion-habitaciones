@@ -2,7 +2,7 @@
   <div class="page">
     <!-- Cabecera de impresión (solo visible al imprimir) -->
     <div class="print-header">
-      <img v-if="cfg.logo" :src="cfg.logo" class="print-logo" alt="Logo" />
+      <img v-if="cfg.logoUrl" :src="cfg.logoUrl" class="print-logo" alt="Logo" />
       <div class="print-header-texto">
         <div class="print-nombre">{{ cfg.nombreResidencia }}</div>
         <div class="print-subtitulo">Plano de ocupación · {{ plantaActualLabel }} · {{ fechaHoy }}</div>

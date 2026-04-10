@@ -2,7 +2,7 @@
   <div class="app-layout">
     <aside class="sidebar no-print">
       <div class="sidebar-header">
-        <img v-if="cfg.logo" :src="cfg.logo" class="sidebar-logo-img" alt="Logo" />
+        <img v-if="cfg.logoUrl" :src="cfg.logoUrl" class="sidebar-logo-img" alt="Logo" />
         <div class="sidebar-nombre">{{ cfg.nombreResidencia }}</div>
         <div class="sidebar-sub">Gestión de habitaciones</div>
       </div>

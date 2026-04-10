@@ -1,6 +1,5 @@
 import { ipcMain, dialog, app } from 'electron'
 import { join } from 'path'
-import { readFileSync } from 'fs'
 import ExcelJS from 'exceljs'
 import * as db from './db.js'
 import * as config from './config.js'
@@ -31,12 +30,8 @@ export function registerHandlers() {
     })
     if (canceled || !filePaths.length) return null
     const filePath = filePaths[0]
-    const buffer = readFileSync(filePath)
-    const ext = filePath.split('.').pop().toLowerCase()
-    const mime = ext === 'svg' ? 'image/svg+xml' : `image/${ext}`
-    const dataUrl = `data:${mime};base64,${buffer.toString('base64')}`
-    config.setLogo(dataUrl)
-    return dataUrl
+    config.setLogoPath(filePath)
+    return filePath
   }))
 
   ipcMain.handle('deleteLogo', h(() => config.deleteLogo()))

@@ -26,7 +26,7 @@ export function getConfig() {
   const cfg = read()
   return {
     nombreResidencia: cfg.nombreResidencia || 'Residencia',
-    logo: cfg.logo || null
+    logoPath: cfg.logoPath || null
   }
 }
 
@@ -36,15 +36,17 @@ export function setNombreResidencia(nombre) {
   write(cfg)
 }
 
-export function setLogo(dataUrl) {
+export function setLogoPath(logoPath) {
   const cfg = read()
-  cfg.logo = dataUrl
+  cfg.logoPath = logoPath
+  delete cfg.logo  // limpiar formato antiguo (base64)
   write(cfg)
 }
 
 export function deleteLogo() {
   const cfg = read()
-  delete cfg.logo
+  delete cfg.logoPath
+  delete cfg.logo  // limpiar formato antiguo
   write(cfg)
 }
 

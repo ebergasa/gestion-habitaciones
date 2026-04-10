@@ -23,21 +23,26 @@
         <div style="margin-top:16px;">
           <label style="display:block; font-size:13px; font-weight:500; color:#555; margin-bottom:8px;">Logotipo</label>
 
-          <div class="logo-preview-area" :class="{ 'logo-preview-area--vacio': !cfg.logo }">
-            <img v-if="cfg.logo" :src="cfg.logo" class="logo-preview-img" alt="Logo actual" />
+          <div class="logo-preview-area" :class="{ 'logo-preview-area--vacio': !cfg.logoUrl }">
+            <img v-if="cfg.logoUrl" :src="cfg.logoUrl" class="logo-preview-img" alt="Logo actual" />
             <span v-else style="color:#aaa; font-size:13px;">Sin logotipo</span>
           </div>
 
-          <div style="display:flex; gap:8px; margin-top:10px;">
-            <button class="btn btn-outline btn-sm" @click="seleccionarLogo">
-              {{ cfg.logo ? 'Cambiar logotipo' : 'Seleccionar logotipo' }}
-            </button>
-            <button v-if="cfg.logo" class="btn btn-danger btn-sm" @click="eliminarLogo">
-              Quitar logotipo
-            </button>
+          <div class="form-group" style="max-width:560px; margin-top:10px;">
+            <div style="display:flex; gap:8px;">
+              <input
+                type="text"
+                :value="cfg.logoPath || ''"
+                readonly
+                placeholder="(sin logotipo)"
+                style="flex:1; background:#f9f9f9; color:#555; cursor:default; font-size:12px;"
+              />
+              <button class="btn btn-outline btn-sm" @click="seleccionarLogo">Cambiar…</button>
+              <button v-if="cfg.logoPath" class="btn btn-danger btn-sm" @click="eliminarLogo">Quitar</button>
+            </div>
           </div>
           <p style="font-size:11px; color:#888; margin-top:6px;">
-            Formatos admitidos: SVG, PNG, JPG. Se mostrará en la barra lateral y en el encabezado del plano impreso.
+            Formatos admitidos: SVG, PNG, JPG. Puede ser una ruta local o de red. Se mostrará en la barra lateral y en el encabezado del plano impreso.
           </p>
         </div>
       </section>
