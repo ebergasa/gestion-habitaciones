@@ -94,13 +94,40 @@ export function registerHandlers() {
   ipcMain.handle('getInsights', h((_e, params) => db.getInsights(params)))
 
   // ── Exportación Excel ─────────────────────────────────────────────────────
-  ipcMain.handle('seleccionarRutaExcel', async () => {
+  ipcMain.handle('seleccionarRutaExcel', async (_, defaultName) => {
     const { filePath } = await dialog.showSaveDialog({
       title: 'Guardar Excel',
-      defaultPath: `gestion-habitaciones-${new Date().toISOString().slice(0,10)}.xlsx`,
+      defaultPath: defaultName || `gestion-habitaciones-${new Date().toISOString().slice(0,10)}.xlsx`,
       filters: [{ name: 'Excel', extensions: ['xlsx'] }]
     })
     return filePath || null
+  })
+
+  ipcMain.handle('exportarResidentes', async (_, { filas, rutaDestino }) => {
+    const workbook = new ExcelJS.Workbook()
+    workbook.creator = 'Gestión de Habitaciones'
+
+    const hoja = workbook.addWorksheet('Residentes')
+    hoja.columns = [
+      { header: 'Apellidos, Nombre',  key: 'nombre',          width: 30 },
+      { header: 'DNI',                key: 'dni',             width: 12 },
+      { header: 'Cód. Residente',     key: 'codigo_externo',  width: 16 },
+      { header: 'Habitación actual',  key: 'habitacion',      width: 16 },
+      { header: 'Fecha entrada',      key: 'fecha_entrada',   width: 14 },
+    ]
+    estiloCabecera(hoja)
+    for (const r of filas) {
+      hoja.addRow({
+        nombre:         `${r.apellidos}, ${r.nombre}`,
+        dni:            r.dni || '',
+        codigo_externo: r.codigo_externo || '',
+        habitacion:     r.habitacion_numero || '',
+        fecha_entrada:  r.fecha_entrada || '',
+      })
+    }
+
+    await workbook.xlsx.writeFile(rutaDestino)
+    return { ok: true }
   })
 
   ipcMain.handle('exportarExcel', async (_, rutaDestino) => {

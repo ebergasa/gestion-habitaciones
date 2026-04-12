@@ -36,6 +36,10 @@
         </select>
       </div>
       <div style="display:flex; align-items:flex-end; gap:8px;">
+        <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer; padding-bottom:6px;">
+          <input type="checkbox" v-model="filtros.soloActivas" />
+          Solo activas
+        </label>
         <button class="btn btn-primary" @click="cargar">Filtrar</button>
         <button class="btn btn-outline" @click="limpiarFiltros">Limpiar</button>
       </div>
@@ -109,7 +113,7 @@ import { normalizar } from '@/utils/normalizar.js'
 const historial = ref([])
 const motivos = ref([])
 const cargando = ref(false)
-const filtros = ref({ planta: '', desde: '', hasta: '', nombreResidente: '', motivoId: '' })
+const filtros = ref({ planta: '', desde: '', hasta: '', nombreResidente: '', motivoId: '', soloActivas: false })
 
 const sortCol = ref('fecha_entrada')
 const sortDir = ref('desc')
@@ -137,6 +141,9 @@ const historialFiltrado = computed(() => {
   }
   if (filtros.value.motivoId) {
     h = h.filter(r => r.motivo_id === filtros.value.motivoId)
+  }
+  if (filtros.value.soloActivas) {
+    h = h.filter(r => !r.fecha_salida)
   }
 
   const col = sortCol.value
@@ -179,7 +186,7 @@ function icono(col) {
 }
 
 function limpiarFiltros() {
-  filtros.value = { planta: '', desde: '', hasta: '', nombreResidente: '', motivoId: '' }
+  filtros.value = { planta: '', desde: '', hasta: '', nombreResidente: '', motivoId: '', soloActivas: false }
   cargar()
 }
 

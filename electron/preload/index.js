@@ -55,8 +55,9 @@ const api = {
   reiniciarApp: () => ipcRenderer.invoke('reiniciarApp'),
 
   // Exportación
-  seleccionarRutaExcel: () => ipcRenderer.invoke('seleccionarRutaExcel'),
-  exportarExcel: (ruta) => ipcRenderer.invoke('exportarExcel', ruta)
+  seleccionarRutaExcel: (defaultName) => ipcRenderer.invoke('seleccionarRutaExcel', defaultName),
+  exportarExcel: (ruta) => ipcRenderer.invoke('exportarExcel', ruta),
+  exportarResidentes: (filas, rutaDestino) => ipcRenderer.invoke('exportarResidentes', { filas, rutaDestino })
 }
 
 contextBridge.exposeInMainWorld('api', api)

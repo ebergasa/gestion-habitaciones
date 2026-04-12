@@ -2,7 +2,10 @@
   <div class="page">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
       <h1 style="font-size:20px; font-weight:600;">Residentes</h1>
-      <button class="btn btn-primary" @click="abrirFormulario(null)">+ Nuevo residente</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline" @click="exportarExcel" :disabled="!residentesFiltrados.length">Exportar Excel</button>
+        <button class="btn btn-primary" @click="abrirFormulario(null)">+ Nuevo residente</button>
+      </div>
     </div>
 
     <!-- Búsqueda y filtros -->
@@ -162,6 +165,17 @@ async function confirmarEliminar(r) {
     await store.eliminar(r.id)
   } catch (e) {
     alert(e.message)
+  }
+}
+
+async function exportarExcel() {
+  const fecha = new Date().toISOString().slice(0, 10)
+  const ruta = await window.api.seleccionarRutaExcel(`residentes-${fecha}.xlsx`)
+  if (!ruta) return
+  try {
+    await window.api.exportarResidentes(JSON.parse(JSON.stringify(residentesFiltrados.value)), ruta)
+  } catch (e) {
+    alert('Error al exportar: ' + e.message)
   }
 }
 </script>
