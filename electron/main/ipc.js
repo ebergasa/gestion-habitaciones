@@ -18,9 +18,9 @@ function h(fn) {
 
 export function registerHandlers() {
   // ── Configuración (nombre + logo) ─────────────────────────────────────────
-  ipcMain.handle('getConfig', h(() => config.getConfig()))
+  ipcMain.handle('getConfig', h(() => db.getAppConfig()))
 
-  ipcMain.handle('setNombreResidencia', h((_, nombre) => config.setNombreResidencia(nombre)))
+  ipcMain.handle('setNombreResidencia', h((_, nombre) => db.setNombreResidencia(nombre)))
 
   ipcMain.handle('seleccionarLogo', h(async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -30,11 +30,12 @@ export function registerHandlers() {
     })
     if (canceled || !filePaths.length) return null
     const filePath = filePaths[0]
-    config.setLogoPath(filePath)
+    db.setLogoPath(filePath)
     return filePath
   }))
 
-  ipcMain.handle('deleteLogo', h(() => config.deleteLogo()))
+  ipcMain.handle('deleteLogo', h(() => db.deleteLogo()))
+  ipcMain.handle('setMotivoCambioHabitacion', h((_, id) => db.setMotivoCambioHabitacion(id)))
 
   ipcMain.handle('getVersion', h(() => app.getVersion()))
   ipcMain.handle('getRutaDB', h(() => config.getRutaDB()))

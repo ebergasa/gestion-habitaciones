@@ -128,6 +128,12 @@
         <li><strong>Nombre de la residencia</strong> — aparece en la barra lateral y en el encabezado del plano al imprimir.</li>
         <li><strong>Logotipo</strong> — imagen SVG, PNG o JPG. Se escala automáticamente. Aparece en la barra lateral y en el encabezado de impresión. Para quitarlo, pulsa <em>Quitar logotipo</em>.</li>
       </ul>
+      <div class="ayuda-aviso">
+        <strong>Logotipo en entornos de red:</strong> si el fichero de imagen está en la misma carpeta o unidad de red que la base de datos, la ruta se guarda de forma relativa. Así funciona correctamente en todos los equipos aunque la unidad de red esté montada con distinta letra (<code>Z:</code>, <code>Y:</code>…). Si el logo está en un disco local de un equipo concreto, solo será visible desde ese equipo.
+      </div>
+
+      <h3>Zona de peligro</h3>
+      <p>Las secciones de <em>Habitaciones</em>, <em>Base de datos</em>, <em>Motivos de salida</em> y <em>Cambio de habitación</em> están ocultas por defecto para evitar cambios accidentales. Para acceder, escribe la palabra <strong>peligroso</strong> en el campo que aparece junto al aviso y pulsa <em>Desbloquear</em> (o <kbd>Enter</kbd>). Una vez terminado, pulsa <em>Bloquear</em> para volver a ocultarlas.</p>
 
       <h3>Habitaciones</h3>
       <p>Permite marcar habitaciones como <strong>dobles</strong> (2 plazas) o <strong>individuales</strong> (1 plaza).</p>
@@ -143,6 +149,7 @@
         <li>El código numérico lo elige el usuario al crear el motivo y no puede cambiarse después.</li>
         <li>No se puede eliminar un motivo que ya esté asociado a ocupaciones del historial.</li>
         <li>Ejemplos habituales: <em>1 - Fallecimiento</em>, <em>2 - Traslado</em>, <em>3 - Alta voluntaria</em>.</li>
+        <li><strong>Motivo por defecto para cambio de habitación</strong> — cuando se traslada un residente a otra habitación, la ocupación anterior se cierra automáticamente con este motivo. Configúralo aquí para que no quede sin motivo en el historial.</li>
       </ul>
     </section>
 
@@ -162,6 +169,7 @@
 
       <h3>Acceso compartido desde varios equipos</h3>
       <p>Si varios ordenadores deben acceder a los mismos datos, configura en todos ellos la misma ruta de red (por ejemplo <code>\\servidor\residencia\gestion-habitaciones.sqlite</code>). SQLite admite acceso concurrente limitado; se recomienda que solo un usuario trabaje con la aplicación a la vez.</p>
+      <p>Toda la configuración de la aplicación (nombre de la residencia, logotipo, motivos…) se guarda <strong>dentro de la propia base de datos</strong>, no en el equipo local. Así, cualquier equipo que apunte a la misma BD verá exactamente la misma configuración sin necesidad de ajustes adicionales.</p>
 
       <h3>Variable de entorno <code>DB_PATH</code></h3>
       <p>La ruta también puede fijarse mediante la variable de entorno <code>DB_PATH</code>, que tiene prioridad sobre cualquier otro ajuste:</p>

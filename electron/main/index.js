@@ -1,7 +1,7 @@
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, shell, dialog } from 'electron'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { initDB } from './db.js'
+import { initDB, acquireLock, releaseLock } from './db.js'
 import { registerHandlers } from './ipc.js'
 import { crearBackup } from './backup.js'
 import { initConfig, getRutaDB } from './config.js'
@@ -49,6 +49,18 @@ app.whenReady().then(() => {
   const defaultDbPath = join(dirname(app.getPath('exe')), 'gestion-habitaciones.sqlite')
   const dbPath = process.env.DB_PATH || getRutaDB() || defaultDbPath
 
+  // Comprobar que no hay otra instancia usando la BD en red
+  const lock = acquireLock(dbPath)
+  if (lock.locked) {
+    dialog.showMessageBoxSync({
+      type:    'warning',
+      title:   'Base de datos en uso',
+      message: `La base de datos ya está abierta en el equipo "${lock.hostname}".\n\nCierra esa instancia antes de continuar.`
+    })
+    app.exit(0)
+    return
+  }
+
   crearBackup(dbPath)
   initDB(dbPath)
   registerHandlers()
@@ -57,6 +69,10 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+})
+
+app.on('before-quit', () => {
+  releaseLock()
 })
 
 app.on('window-all-closed', () => {

@@ -4,6 +4,7 @@ import { ref, computed } from 'vue'
 export const useConfigStore = defineStore('config', () => {
   const nombreResidencia = ref('Residencia')
   const logoPath = ref(null)
+  const motivoCambioHabitacionId = ref(null)
 
   // Convierte ruta Windows (local o UNC) a URL file:// para usar en <img src>
   const logoUrl = computed(() => {
@@ -21,6 +22,7 @@ export const useConfigStore = defineStore('config', () => {
     const cfg = await window.api.getConfig()
     nombreResidencia.value = cfg.nombreResidencia
     logoPath.value = cfg.logoPath
+    motivoCambioHabitacionId.value = cfg.motivoCambioHabitacionId ?? null
   }
 
   async function guardarNombre(nombre) {
@@ -39,5 +41,10 @@ export const useConfigStore = defineStore('config', () => {
     logoPath.value = null
   }
 
-  return { nombreResidencia, logoPath, logoUrl, cargar, guardarNombre, seleccionarLogo, eliminarLogo }
+  async function guardarMotivoCambio(id) {
+    await window.api.setMotivoCambioHabitacion(id || null)
+    motivoCambioHabitacionId.value = id || null
+  }
+
+  return { nombreResidencia, logoPath, logoUrl, motivoCambioHabitacionId, cargar, guardarNombre, seleccionarLogo, eliminarLogo, guardarMotivoCambio }
 })

@@ -1,9 +1,75 @@
 import Database from 'better-sqlite3'
 import fs from 'fs'
 import path from 'path'
+import os from 'os'
+
+// Convierte una ruta absoluta de logo a relativa respecto a la BD (si es posible).
+// Así el path es portátil cuando app+BD+logo están en la misma unidad de red.
+function toStoredLogoPath(absPath) {
+  if (!absPath || !currentDbPath) return absPath
+  const rel = path.relative(path.dirname(currentDbPath), absPath)
+  // Si la ruta relativa cruza de unidad (Windows) o sube demasiado, guardar absoluta
+  if (path.isAbsolute(rel) || rel.startsWith('..')) return absPath
+  return rel
+}
+
+// Resuelve la ruta almacenada a absoluta en esta máquina
+function fromStoredLogoPath(stored) {
+  if (!stored || !currentDbPath) return stored
+  if (path.isAbsolute(stored)) return stored
+  return path.resolve(path.dirname(currentDbPath), stored)
+}
 
 let db
 let currentDbPath
+
+// ── Lock de instancia única ───────────────────────────────────────────────────
+// Evita que dos instancias abran la misma BD en red simultáneamente.
+// El lock es un fichero .lock junto a la BD con { pid, hostname, timestamp }.
+// Un heartbeat cada 15 s renueva el timestamp. Si el lock tiene más de 30 s
+// de antigüedad se considera obsoleto (la instancia anterior se cerró mal).
+
+let lockFilePath = null
+let heartbeatTimer = null
+
+function writeLock() {
+  if (!lockFilePath) return
+  try {
+    fs.writeFileSync(lockFilePath, JSON.stringify({
+      pid:       process.pid,
+      hostname:  os.hostname(),
+      timestamp: Date.now()
+    }), 'utf8')
+  } catch { /* ignorar fallos de red transitorios */ }
+}
+
+export function acquireLock(dbPath) {
+  const filePath = dbPath + '.lock'
+
+  if (fs.existsSync(filePath)) {
+    try {
+      const lock = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+      if (Date.now() - lock.timestamp < 30_000) {
+        // Lock fresco → otra instancia activa
+        return { locked: true, hostname: lock.hostname }
+      }
+      // Lock obsoleto → lo sobreescribimos
+    } catch { /* fichero corrupto → lo sobreescribimos */ }
+  }
+
+  lockFilePath = filePath
+  writeLock()
+  heartbeatTimer = setInterval(writeLock, 15_000)
+  return { locked: false }
+}
+
+export function releaseLock() {
+  if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null }
+  if (lockFilePath) {
+    try { fs.unlinkSync(lockFilePath) } catch { /* ignorar */ }
+    lockFilePath = null
+  }
+}
 
 function normalizar(str) {
   if (!str) return ''
@@ -32,7 +98,10 @@ export function getBackups() {
 export function initDB(dbPath) {
   currentDbPath = dbPath
   db = new Database(dbPath)
-  db.pragma('journal_mode = WAL')
+  // DELETE mode es el único fiable en unidades de red (SMB/CIFS).
+  // WAL usa ficheros -shm de memoria compartida que no funcionan en red.
+  db.pragma('journal_mode = DELETE')
+  db.pragma('busy_timeout = 10000')   // esperar hasta 10 s si otro proceso escribe
   db.pragma('foreign_keys = ON')
   // Función disponible en todas las queries SQLite
   db.function('normalizar', normalizar)
@@ -85,6 +154,11 @@ function crearSchema() {
     BEGIN
       UPDATE ocupaciones SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
     END;
+
+    CREATE TABLE IF NOT EXISTS config (
+      key   TEXT PRIMARY KEY,
+      value TEXT
+    );
   `)
 }
 
@@ -137,6 +211,36 @@ function seedHabitaciones() {
 
   insertMany(habitaciones)
 }
+
+// ── Config ────────────────────────────────────────────────────────────────────
+
+function getConfigValue(key, defaultValue = null) {
+  const row = db.prepare('SELECT value FROM config WHERE key = ?').get(key)
+  return row ? row.value : defaultValue
+}
+
+function setConfigValue(key, value) {
+  if (value === null || value === undefined) {
+    db.prepare('DELETE FROM config WHERE key = ?').run(key)
+  } else {
+    db.prepare('INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)').run(key, String(value))
+  }
+}
+
+export function getAppConfig() {
+  const motivoId = getConfigValue('motivoCambioHabitacionId')
+  const storedLogo = getConfigValue('logoPath', null)
+  return {
+    nombreResidencia: getConfigValue('nombreResidencia', 'Residencia'),
+    logoPath:         fromStoredLogoPath(storedLogo),
+    motivoCambioHabitacionId: motivoId ? Number(motivoId) : null
+  }
+}
+
+export function setNombreResidencia(nombre) { setConfigValue('nombreResidencia', nombre) }
+export function setLogoPath(p)              { setConfigValue('logoPath', toStoredLogoPath(p)) }
+export function deleteLogo()                { setConfigValue('logoPath', null) }
+export function setMotivoCambioHabitacion(id) { setConfigValue('motivoCambioHabitacionId', id || null) }
 
 // ── Habitaciones ──────────────────────────────────────────────────────────────
 
@@ -244,7 +348,7 @@ export function desasignarResidente(ocupacionId, { fechaSalida, motivoAltaId, no
   `).run(fechaSalida, motivoAltaId, notas || null, ocupacionId)
 }
 
-export function cambiarHabitacion(ocupacionId, { fecha, nuevaHabitacionId, notas }) {
+export function cambiarHabitacion(ocupacionId, { fecha, nuevaHabitacionId, notas, motivoAltaId }) {
   if (!fecha) throw new Error('La fecha del cambio es obligatoria')
   if (!nuevaHabitacionId) throw new Error('Selecciona la habitación destino')
 
@@ -263,8 +367,8 @@ export function cambiarHabitacion(ocupacionId, { fecha, nuevaHabitacionId, notas
 
   db.transaction(() => {
     db.prepare(
-      'UPDATE ocupaciones SET fecha_salida = ?, notas = ? WHERE id = ?'
-    ).run(fecha, notas || null, ocupacionId)
+      'UPDATE ocupaciones SET fecha_salida = ?, motivo_alta_id = ?, notas = ? WHERE id = ?'
+    ).run(fecha, motivoAltaId || null, notas || null, ocupacionId)
 
     db.prepare(
       'INSERT INTO ocupaciones (habitacion_id, residente_id, fecha_entrada) VALUES (?, ?, ?)'

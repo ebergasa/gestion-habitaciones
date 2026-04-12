@@ -143,6 +143,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useHabitacionesStore } from '@/stores/habitaciones'
 import { useResidentesStore } from '@/stores/residentes'
+import { useConfigStore } from '@/stores/config'
 import { normalizar } from '@/utils/normalizar.js'
 import { fmtFecha } from '@/utils/fecha.js'
 
@@ -153,6 +154,7 @@ const emit = defineEmits(['cerrar', 'actualizado'])
 
 const store = useHabitacionesStore()
 const residentesStore = useResidentesStore()
+const cfgStore = useConfigStore()
 
 const motivos = ref([])
 const ocupacionAlta = ref(null)
@@ -237,7 +239,8 @@ async function confirmarCambio() {
     await window.api.cambiarHabitacion(ocupacionCambio.value.ocupacion_id, {
       fecha: formCambio.value.fecha,
       nuevaHabitacionId: habitacionDestinoId.value,
-      notas: formCambio.value.notas
+      notas: formCambio.value.notas,
+      motivoAltaId: cfgStore.motivoCambioHabitacionId
     })
     ocupacionCambio.value = null
     await store.cargar()

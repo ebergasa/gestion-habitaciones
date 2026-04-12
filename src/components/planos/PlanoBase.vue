@@ -78,8 +78,8 @@
           :y="residenteY(room, i)"
           text-anchor="middle" dominant-baseline="middle"
           fill="#222"
-          :font-size="nombreFontSize(room)"
-          :textLength="room.w - 8"
+          :font-size="nombreFontSize(room, linea)"
+          :textLength="nombreTextLength(room, linea)"
           lengthAdjust="spacingAndGlyphs"
         >{{ linea }}</text>
       </template>
@@ -193,8 +193,20 @@ function numFontSize(room) {
   return Math.max(8, size)
 }
 
-function nombreFontSize(room) {
+function nombreFontSize(room, texto = '') {
   const base = Math.min(room.w, room.h)
-  return Math.min(11, Math.max(8, base * 0.19))
+  const byRoom = Math.min(16, Math.max(8, base * 0.28))
+  if (!texto.length) return byRoom
+  // Inter: ~0.58 × fontSize por carácter medio.
+  const byText = (room.w - 8) / (texto.length * 0.58)
+  return Math.max(8, Math.min(byRoom, byText))
+}
+
+// Solo activa textLength (y por tanto spacingAndGlyphs) cuando el texto
+// no cabe de forma natural a tamaño mínimo (8px).
+function nombreTextLength(room, texto = '') {
+  if (!texto.length) return undefined
+  const byText = (room.w - 8) / (texto.length * 0.58)
+  return byText < 8 ? room.w - 8 : undefined
 }
 </script>

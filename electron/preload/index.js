@@ -9,6 +9,7 @@ const api = {
   setNombreResidencia: (nombre) => ipcRenderer.invoke('setNombreResidencia', nombre),
   seleccionarLogo: () => ipcRenderer.invoke('seleccionarLogo'),
   deleteLogo: () => ipcRenderer.invoke('deleteLogo'),
+  setMotivoCambioHabitacion: (id) => ipcRenderer.invoke('setMotivoCambioHabitacion', id),
 
   // Habitaciones
   getHabitacionesConOcupacion: () => ipcRenderer.invoke('getHabitacionesConOcupacion'),

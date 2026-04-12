@@ -43,15 +43,36 @@
           </div>
           <p style="font-size:11px; color:#888; margin-top:6px;">
             Formatos admitidos: SVG, PNG, JPG. Puede ser una ruta local o de red. Se mostrará en la barra lateral y en el encabezado del plano impreso.
+            Si el fichero está en la misma unidad de red que la base de datos, la ruta se guarda de forma relativa y funcionará correctamente en todos los equipos aunque la unidad esté montada con distinta letra.
           </p>
         </div>
       </section>
 
       <!-- ── Zona de peligro ──────────────────────────────────────────────── -->
-      <div class="zona-peligro-header">
-        <span class="zona-peligro-badge">⚠ Zona de peligro</span>
-        <p>Los cambios en estas secciones pueden afectar a los datos y al funcionamiento de la aplicación.</p>
+      <div v-if="!zonaPeligroDesbloqueada" class="zona-peligro-header">
+        <div style="flex:1;">
+          <span class="zona-peligro-badge">⚠ Zona de peligro</span>
+          <p>Habitaciones, base de datos, motivos de salida y cambio de habitación. Para acceder escribe <strong>peligroso</strong>.</p>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <input
+            v-model="palabraClave"
+            type="text"
+            placeholder="peligroso"
+            style="width:110px; padding:4px 8px; font-size:12px; border:1px solid #f5c6cb; border-radius:4px;"
+            @keyup.enter="desbloquearZona"
+          />
+          <button class="btn btn-sm btn-danger" @click="desbloquearZona">Desbloquear</button>
+        </div>
       </div>
+      <div v-else class="zona-peligro-header">
+        <span class="zona-peligro-badge">⚠ Zona de peligro — desbloqueada</span>
+        <p>Los cambios en estas secciones pueden afectar a los datos y al funcionamiento de la aplicación.</p>
+        <button class="btn btn-sm btn-outline" style="margin-left:auto; white-space:nowrap;" @click="bloquearZona">Bloquear</button>
+      </div>
+      <div v-if="errorDesbloqueo" class="alert alert-error" style="margin-top:-12px; margin-bottom:0; font-size:12px;">{{ errorDesbloqueo }}</div>
+
+      <template v-if="zonaPeligroDesbloqueada">
 
       <!-- ── Configuración de habitaciones ────────────────────────────────── -->
       <section class="config-section config-section--peligro">
@@ -231,6 +252,24 @@
         </div>
       </section>
 
+      <!-- ── Cambio de habitación ───────────────────────────────────────────── -->
+      <section class="config-section config-section--peligro">
+        <h2 class="config-section-title">Cambio de habitación</h2>
+        <p style="font-size:12px; color:#888; margin-bottom:14px;">
+          Al trasladar un residente a otra habitación, la ocupación anterior se cierra automáticamente con el motivo que indiques aquí.
+        </p>
+        <div class="form-group" style="max-width:400px;">
+          <label>Motivo por defecto</label>
+          <select :value="cfg.motivoCambioHabitacionId" @change="confirmarMotivoCambio($event)">
+            <option :value="null">— Sin asignar —</option>
+            <option v-for="m in motivos" :key="m.id" :value="m.id">{{ m.nombre }}</option>
+          </select>
+          <small style="color:#888; font-size:11px;">Se registrará automáticamente al confirmar un cambio de habitación.</small>
+        </div>
+      </section>
+
+      </template> <!-- /zona peligro -->
+
     </div>
 
     <!-- Modal motivo -->
@@ -268,6 +307,27 @@ import { useHabitacionesStore } from '@/stores/habitaciones.js'
 
 const cfg = useConfigStore()
 const habStore = useHabitacionesStore()
+
+// ── Zona de peligro ───────────────────────────────────────────────────────────
+const zonaPeligroDesbloqueada = ref(false)
+const palabraClave = ref('')
+const errorDesbloqueo = ref('')
+
+function desbloquearZona() {
+  if (palabraClave.value.trim().toLowerCase() === 'peligroso') {
+    zonaPeligroDesbloqueada.value = true
+    palabraClave.value = ''
+    errorDesbloqueo.value = ''
+  } else {
+    errorDesbloqueo.value = 'Escribe la palabra "peligroso" para desbloquear.'
+  }
+}
+
+function bloquearZona() {
+  zonaPeligroDesbloqueada.value = false
+  palabraClave.value = ''
+  errorDesbloqueo.value = ''
+}
 
 // ── Nombre de la residencia ───────────────────────────────────────────────────
 const nombreEdit = ref(cfg.nombreResidencia)
@@ -394,6 +454,20 @@ async function guardar() {
   } catch (e) {
     error.value = e.message
   }
+}
+
+async function confirmarMotivoCambio(event) {
+  const id = event.target.value ? Number(event.target.value) : null
+  const nombre = id ? motivos.value.find(m => m.id === id)?.nombre : null
+  const msg = nombre
+    ? `¿Establecer "${nombre}" como motivo por defecto para cambios de habitación?`
+    : '¿Quitar el motivo por defecto para cambios de habitación?'
+  if (!confirm(msg)) {
+    // Revertir el select al valor actual
+    event.target.value = cfg.motivoCambioHabitacionId ?? ''
+    return
+  }
+  await cfg.guardarMotivoCambio(id)
 }
 
 async function eliminar(m) {

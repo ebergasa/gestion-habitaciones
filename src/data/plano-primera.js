@@ -17,27 +17,27 @@ const ALA_NORTE_W  = 210  // ancho de habitación en el ala norte
 const ALA_SUR_W    = 200  // ancho de habitación en el ala sur
 const ALA_SUR_H    = 45   // alto de habitación simple en el ala sur
 const ALA_SUR_H2   = ALA_SUR_H * 2 + GAP   // alto de habitación doble ala sur
-const ALA_NORTE_EXT_H  = 53   // alto de habitación simple en el ala norte (col exterior: 157,155,…)
+const ALA_NORTE_EXT_H  = 54   // alto de habitación simple en el ala norte (col exterior: 157,155,…)
 const ALA_NORTE_INT_H  = 45   // alto de habitación simple en el ala norte (col interior: 156,153,…)
 const ALA_NORTE_INT_H2 = ALA_NORTE_INT_H * 2 + GAP // alto de habitación doble ala norte (col interior)
 
-const COR_W  = 100   // ancho de habitación simple en los corredores
+const COR_W  = 101   // ancho de habitación simple en los corredores
 const COR_H  = 67   // alto de habitación en los corredores
 const COR_W2 = COR_W * 2 + GAP   // ancho de habitación doble (= 169px)
 
 // ── Posiciones de origen de cada sección ─────────────────────────────────────
 
 const ALA_SUR_Y       = 143  // y donde empieza el ala sur
-const ALA_NORTE_EXT_Y = 10   // y donde empieza la col exterior del ala norte
+const ALA_NORTE_EXT_Y = 4  // y donde empieza la col exterior del ala norte
 const ALA_NORTE_INT_Y = 142   // y donde empieza la col interior del ala norte
 
-const ALA_SUR_X       = 10   // x columna exterior ala sur
-const ALA_SUR_COL_GAP = 50   // separación entre columna exterior e interior del ala sur
+const ALA_SUR_X       = 30   // x columna exterior ala sur
+const ALA_SUR_COL_GAP = 60   // separación entre columna exterior e interior del ala sur
                               // columna interior = ALA_SUR_X + ALA_SUR_W + ALA_SUR_COL_GAP
 
 const COR_X           = 30   // x donde empieza el primer hueco de los corredores
 
-const ALA_NORTE_COL_GAP = 50   // separación entre columna interior y exterior del ala norte
+const ALA_NORTE_COL_GAP = 60   // separación entre columna interior y exterior del ala norte
 const ALA_NORTE_X_EXT = 1500 - 10 - ALA_NORTE_W                        // x columna exterior ala norte (= 1280)
 const ALA_NORTE_X_INT = ALA_NORTE_X_EXT - ALA_NORTE_W - ALA_NORTE_COL_GAP // x columna interior ala norte
 
@@ -108,9 +108,7 @@ export const zones = []
 
 export const labels = [
   { text: 'PRIMERA PLANTA', x: 778,  y: 430, fontSize: 28, fontWeight: 'bold', color: '#e0e0e0' },
-  { text: 'Ala Sur',        x: 132,  y: 85, fontSize: 10, color: '#aaa' },
-  { text: 'Ala Norte',      x: 1400, y: 85, fontSize: 10, color: '#aaa' },
-  { text: 'Corredor Oeste', x: 778,  y: 5,   fontSize: 10, color: '#aaa' },
+{ text: 'Corredor Oeste', x: 778,  y: 5,   fontSize: 10, color: '#aaa' },
   { text: 'Corredor Este',  x: 778,  y: 685, fontSize: 10, color: '#aaa' },
 ]
 
