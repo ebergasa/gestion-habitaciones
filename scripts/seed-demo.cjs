@@ -284,8 +284,15 @@ CREATE TABLE ocupaciones (
   fecha_salida   DATE,
   motivo_alta_id INTEGER REFERENCES motivos_alta(id),
   notas          TEXT,
-  created_at     DATETIME DEFAULT CURRENT_TIMESTAMP
-);`)
+  created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER ocupaciones_updated_at
+AFTER UPDATE OF fecha_salida, motivo_alta_id, notas ON ocupaciones
+FOR EACH ROW
+BEGIN
+  UPDATE ocupaciones SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;`)
 
   // Habitaciones
   for (let i = 0; i < habitaciones.length; i++) {

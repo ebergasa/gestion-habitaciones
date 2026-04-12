@@ -166,6 +166,8 @@ html, body, #app {
 .btn-danger:hover { background: #c0392b; }
 .btn-outline { background: white; color: var(--color-primary); border: 1px solid var(--color-primary); }
 .btn-outline:hover { background: #ebf5fb; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-secondary:hover { background: #5a6268; }
 .btn-sm { padding: 4px 10px; font-size: 12px; }
 
 /* Formularios */

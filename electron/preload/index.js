@@ -25,6 +25,8 @@ const api = {
     ipcRenderer.invoke('asignarResidente', habitacionId, residenteId, fechaEntrada),
   desasignarResidente: (ocupacionId, data) =>
     ipcRenderer.invoke('desasignarResidente', ocupacionId, data),
+  cambiarHabitacion: (ocupacionId, data) =>
+    ipcRenderer.invoke('cambiarHabitacion', ocupacionId, data),
 
   // Motivos de alta
   getMotivosAlta: () => ipcRenderer.invoke('getMotivosAlta'),

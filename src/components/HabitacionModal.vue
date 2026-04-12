@@ -23,12 +23,43 @@
           >
             <div class="residente-info">
               <strong>{{ oc.apellidos }}, {{ oc.nombre }}</strong>
-              <span class="detalle">DNI: {{ oc.dni || '—' }}</span>
               <span class="detalle">Entrada: {{ fmtFecha(oc.fecha_entrada) }}</span>
             </div>
-            <button class="btn btn-sm btn-danger" @click="iniciarAlta(oc)">
-              Registrar salida
-            </button>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-sm btn-secondary" @click="iniciarCambio(oc)">
+                Cambiar habitación
+              </button>
+              <button class="btn btn-sm btn-danger" @click="iniciarAlta(oc)">
+                Registrar salida
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario de cambio de habitación -->
+        <div v-if="ocupacionCambio" class="seccion seccion-cambio">
+          <h3 class="seccion-titulo">Cambio de habitación · {{ ocupacionCambio.apellidos }}, {{ ocupacionCambio.nombre }}</h3>
+          <div v-if="errorCambio" class="alert alert-error">{{ errorCambio }}</div>
+          <div class="form-group">
+            <label>Fecha del cambio *</label>
+            <input type="date" v-model="formCambio.fecha" />
+          </div>
+          <div class="form-group">
+            <label>Nueva habitación *</label>
+            <select v-model="habitacionDestinoId">
+              <option value="">— Seleccionar habitación —</option>
+              <option v-for="h in habitacionesDestino" :key="h.id" :value="h.id">
+                Hab. {{ h.numero }} · {{ h.capacidad }} {{ h.capacidad === 1 ? 'plaza' : 'plazas' }} · {{ h.plazas_libres }} libre{{ h.plazas_libres === 1 ? '' : 's' }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Notas</label>
+            <textarea v-model="formCambio.notas" rows="2" placeholder="Observaciones opcionales…"></textarea>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary" @click="confirmarCambio">Confirmar cambio</button>
+            <button class="btn btn-outline" @click="ocupacionCambio = null">Cancelar</button>
           </div>
         </div>
 
@@ -60,7 +91,7 @@
         </div>
 
         <!-- Asignar residente -->
-        <div v-if="!ocupacionAlta && puedAsignar" class="seccion">
+        <div v-if="!ocupacionAlta && !ocupacionCambio && puedAsignar" class="seccion">
           <h3 class="seccion-titulo">Asignar residente</h3>
           <div v-if="errorAsignar" class="alert alert-error">{{ errorAsignar }}</div>
           <div class="form-group">
@@ -81,7 +112,6 @@
               @click="seleccionarResidente(r)"
             >
               <span>{{ r.apellidos }}, {{ r.nombre }}</span>
-              <span class="detalle">{{ r.dni || '' }}</span>
               <span v-if="r.habitacion_numero" class="badge badge-info" style="margin-left:auto">
                 Hab. {{ r.habitacion_numero }}
               </span>
@@ -101,7 +131,7 @@
           </button>
         </div>
 
-        <div v-if="!puedAsignar && !ocupacionAlta" class="alert alert-info" style="margin-top:8px">
+        <div v-if="!puedAsignar && !ocupacionAlta && !ocupacionCambio" class="alert alert-info" style="margin-top:8px">
           La habitación está completa ({{ habitacion.ocupaciones.length }}/{{ habitacion.capacidad }} plazas).
         </div>
       </div>
@@ -129,6 +159,12 @@ const ocupacionAlta = ref(null)
 const errorAlta = ref('')
 const formAlta = ref({ fechaSalida: '', motivoAltaId: '', notas: '' })
 
+const ocupacionCambio = ref(null)
+const errorCambio = ref('')
+const formCambio = ref({ fecha: '', notas: '' })
+const habitacionesDestino = ref([])
+const habitacionDestinoId = ref('')
+
 const busquedaResidente = ref('')
 const residentesFiltrados = ref([])
 const residenteSeleccionado = ref(null)
@@ -138,11 +174,13 @@ const errorAsignar = ref('')
 watch(() => props.habitacion, (h) => {
   if (h) {
     ocupacionAlta.value = null
+    ocupacionCambio.value = null
     busquedaResidente.value = ''
     residentesFiltrados.value = []
     residenteSeleccionado.value = null
     errorAsignar.value = ''
     errorAlta.value = ''
+    errorCambio.value = ''
   }
 }, { immediate: true })
 
@@ -175,9 +213,38 @@ const badgeEstado = computed(() => {
 })
 
 function iniciarAlta(oc) {
+  ocupacionCambio.value = null
   ocupacionAlta.value = oc
   formAlta.value = { fechaSalida: hoy(), motivoAltaId: '', notas: '' }
   errorAlta.value = ''
+}
+
+async function iniciarCambio(oc) {
+  ocupacionAlta.value = null
+  ocupacionCambio.value = oc
+  formCambio.value = { fecha: hoy(), notas: '' }
+  habitacionDestinoId.value = ''
+  errorCambio.value = ''
+  const todas = await window.api.getHabitacionesLibres()
+  habitacionesDestino.value = todas.filter(h => h.id !== props.habitacion.id)
+}
+
+async function confirmarCambio() {
+  errorCambio.value = ''
+  if (!formCambio.value.fecha) { errorCambio.value = 'Indica la fecha del cambio'; return }
+  if (!habitacionDestinoId.value) { errorCambio.value = 'Selecciona la habitación destino'; return }
+  try {
+    await window.api.cambiarHabitacion(ocupacionCambio.value.ocupacion_id, {
+      fecha: formCambio.value.fecha,
+      nuevaHabitacionId: habitacionDestinoId.value,
+      notas: formCambio.value.notas
+    })
+    ocupacionCambio.value = null
+    await store.cargar()
+    emit('actualizado')
+  } catch (e) {
+    errorCambio.value = e.message
+  }
 }
 
 async function confirmarAlta() {
@@ -245,6 +312,7 @@ function plantaLabel(p) {
 .seccion { margin-top: 20px; }
 .seccion-titulo { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
 .seccion-alta { background: #fff8f0; border: 1px solid #ffe0b2; border-radius: 6px; padding: 14px; }
+.seccion-cambio { background: #f0f7ff; border: 1px solid #b3d4f5; border-radius: 6px; padding: 14px; }
 .residente-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8f9fa; border-radius: 6px; margin-bottom: 8px; }
 .residente-info { display: flex; flex-direction: column; gap: 2px; }
 .detalle { font-size: 12px; color: #888; }

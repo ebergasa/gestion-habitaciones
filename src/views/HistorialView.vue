@@ -47,14 +47,30 @@
       <table>
         <thead>
           <tr>
-            <th>Habitación</th>
-            <th>Planta</th>
-            <th>Residente</th>
-            <th>DNI</th>
-            <th>Cód. Residente</th>
-            <th>Fecha entrada</th>
-            <th>Fecha salida</th>
-            <th>Motivo salida</th>
+            <th class="th-sort" @click="ordenar('habitacion_numero')">
+              Habitación <span class="sort-icon">{{ icono('habitacion_numero') }}</span>
+            </th>
+            <th class="th-sort" @click="ordenar('planta')">
+              Planta <span class="sort-icon">{{ icono('planta') }}</span>
+            </th>
+            <th class="th-sort" @click="ordenar('residente')">
+              Residente <span class="sort-icon">{{ icono('residente') }}</span>
+            </th>
+            <th class="th-sort" @click="ordenar('codigo_externo')">
+              Cód. Residente <span class="sort-icon">{{ icono('codigo_externo') }}</span>
+            </th>
+            <th class="th-sort" @click="ordenar('fecha_entrada')">
+              Fecha entrada <span class="sort-icon">{{ icono('fecha_entrada') }}</span>
+            </th>
+            <th class="th-sort" @click="ordenar('fecha_salida')">
+              Fecha salida <span class="sort-icon">{{ icono('fecha_salida') }}</span>
+            </th>
+            <th class="th-sort" @click="ordenar('motivo_nombre')">
+              Motivo salida <span class="sort-icon">{{ icono('motivo_nombre') }}</span>
+            </th>
+            <th class="th-sort" @click="ordenar('updated_at')">
+              Últ. modificación <span class="sort-icon">{{ icono('updated_at') }}</span>
+            </th>
             <th>Notas</th>
           </tr>
         </thead>
@@ -66,7 +82,6 @@
             <td><strong>{{ oc.habitacion_numero }}</strong></td>
             <td>{{ plantaLabel(oc.planta) }}</td>
             <td>{{ oc.apellidos }}, {{ oc.nombre }}</td>
-            <td>{{ oc.dni || '—' }}</td>
             <td>{{ oc.codigo_externo || '—' }}</td>
             <td>{{ fmtFecha(oc.fecha_entrada) }}</td>
             <td>
@@ -74,6 +89,7 @@
               <span v-else class="badge badge-ocupada">Activa</span>
             </td>
             <td>{{ oc.motivo_nombre || '—' }}</td>
+            <td>{{ fmtFecha(oc.updated_at) }}</td>
             <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" :title="oc.notas">{{ oc.notas || '' }}</td>
           </tr>
         </tbody>
@@ -88,11 +104,15 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { fmtFecha } from '@/utils/fecha.js'
+import { normalizar } from '@/utils/normalizar.js'
 
 const historial = ref([])
 const motivos = ref([])
 const cargando = ref(false)
 const filtros = ref({ planta: '', desde: '', hasta: '', nombreResidente: '', motivoId: '' })
+
+const sortCol = ref('fecha_entrada')
+const sortDir = ref('desc')
 
 onMounted(async () => {
   motivos.value = await window.api.getMotivosAlta()
@@ -112,14 +132,51 @@ async function cargar() {
 const historialFiltrado = computed(() => {
   let h = historial.value
   if (filtros.value.nombreResidente) {
-    const q = filtros.value.nombreResidente.toLowerCase()
-    h = h.filter(r => `${r.nombre} ${r.apellidos}`.toLowerCase().includes(q))
+    const q = normalizar(filtros.value.nombreResidente)
+    h = h.filter(r => normalizar(`${r.nombre} ${r.apellidos}`).includes(q))
   }
   if (filtros.value.motivoId) {
     h = h.filter(r => r.motivo_id === filtros.value.motivoId)
   }
-  return h
+
+  const col = sortCol.value
+  const dir = sortDir.value === 'asc' ? 1 : -1
+
+  return [...h].sort((a, b) => {
+    let va, vb
+    if (col === 'habitacion_numero') {
+      va = parseInt(a.habitacion_numero) || 0
+      vb = parseInt(b.habitacion_numero) || 0
+    } else if (col === 'residente') {
+      va = normalizar(`${a.apellidos} ${a.nombre}`)
+      vb = normalizar(`${b.apellidos} ${b.nombre}`)
+    } else {
+      va = a[col]
+      vb = b[col]
+    }
+
+    if (va == null && vb == null) return 0
+    if (va == null) return 1
+    if (vb == null) return -1
+
+    if (typeof va === 'number') return (va - vb) * dir
+    return String(va).localeCompare(String(vb), 'es') * dir
+  })
 })
+
+function ordenar(col) {
+  if (sortCol.value === col) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortCol.value = col
+    sortDir.value = 'asc'
+  }
+}
+
+function icono(col) {
+  if (sortCol.value !== col) return '↕'
+  return sortDir.value === 'asc' ? '↑' : '↓'
+}
 
 function limpiarFiltros() {
   filtros.value = { planta: '', desde: '', hasta: '', nombreResidente: '', motivoId: '' }
@@ -137,3 +194,19 @@ function plantaLabel(p) {
   return { baja: 'Planta Baja', primera: 'Primera Planta', segunda: 'Segunda Planta' }[p] || p
 }
 </script>
+
+<style scoped>
+.th-sort {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.th-sort:hover {
+  background: #e8ecf0;
+}
+.sort-icon {
+  font-size: 11px;
+  color: #aaa;
+  margin-left: 4px;
+}
+</style>

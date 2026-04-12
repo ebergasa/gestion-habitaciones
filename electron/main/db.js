@@ -75,10 +75,19 @@ function crearSchema() {
       fecha_salida   DATE,
       motivo_alta_id INTEGER REFERENCES motivos_alta(id),
       notas          TEXT,
-      created_at     DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TRIGGER IF NOT EXISTS ocupaciones_updated_at
+    AFTER UPDATE OF fecha_salida, motivo_alta_id, notas ON ocupaciones
+    FOR EACH ROW
+    BEGIN
+      UPDATE ocupaciones SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
   `)
 }
+
 
 // Habitaciones individuales de primera planta (resto son dobles)
 const INDIVIDUALES_PRIMERA = new Set([
@@ -235,6 +244,34 @@ export function desasignarResidente(ocupacionId, { fechaSalida, motivoAltaId, no
   `).run(fechaSalida, motivoAltaId, notas || null, ocupacionId)
 }
 
+export function cambiarHabitacion(ocupacionId, { fecha, nuevaHabitacionId, notas }) {
+  if (!fecha) throw new Error('La fecha del cambio es obligatoria')
+  if (!nuevaHabitacionId) throw new Error('Selecciona la habitación destino')
+
+  const oc = db.prepare('SELECT * FROM ocupaciones WHERE id = ? AND fecha_salida IS NULL').get(ocupacionId)
+  if (!oc) throw new Error('Ocupación no encontrada o ya finalizada')
+
+  if (oc.habitacion_id === nuevaHabitacionId) throw new Error('El residente ya está en esa habitación')
+
+  const hab = db.prepare('SELECT * FROM habitaciones WHERE id = ?').get(nuevaHabitacionId)
+  if (!hab) throw new Error('Habitación destino no encontrada')
+
+  const ocupadasNueva = db.prepare(
+    'SELECT COUNT(*) as n FROM ocupaciones WHERE habitacion_id = ? AND fecha_salida IS NULL'
+  ).get(nuevaHabitacionId)
+  if (ocupadasNueva.n >= hab.capacidad) throw new Error('La habitación destino está completa')
+
+  db.transaction(() => {
+    db.prepare(
+      'UPDATE ocupaciones SET fecha_salida = ?, notas = ? WHERE id = ?'
+    ).run(fecha, notas || null, ocupacionId)
+
+    db.prepare(
+      'INSERT INTO ocupaciones (habitacion_id, residente_id, fecha_entrada) VALUES (?, ?, ?)'
+    ).run(nuevaHabitacionId, oc.residente_id, fecha)
+  })()
+}
+
 // ── Motivos de alta ───────────────────────────────────────────────────────────
 
 export function getMotivosAlta() {
@@ -261,7 +298,7 @@ export function deleteMotivoAlta(id) {
 
 export function getHistorial({ planta, desde, hasta, residenteId } = {}) {
   let sql = `
-    SELECT o.id, o.fecha_entrada, o.fecha_salida, o.notas,
+    SELECT o.id, o.fecha_entrada, o.fecha_salida, o.notas, o.updated_at,
            h.numero as habitacion_numero, h.planta, h.tipo,
            r.nombre, r.apellidos, r.dni, r.codigo_externo,
            m.id as motivo_id, m.nombre as motivo_nombre

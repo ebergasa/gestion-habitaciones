@@ -55,7 +55,7 @@
       <h3>Asignar un residente a una habitación</h3>
       <ol>
         <li>Haz clic en una habitación libre (verde).</li>
-        <li>En el panel lateral, busca al residente por nombre o DNI.</li>
+        <li>En el panel lateral, busca al residente por nombre.</li>
         <li>Selecciona la fecha de entrada (por defecto, hoy).</li>
         <li>Pulsa <strong>Asignar</strong>.</li>
       </ol>
@@ -199,7 +199,7 @@
       <p>Disponible desde la pantalla de <strong>Historial</strong>. Genera un fichero <code>.xlsx</code> con tres hojas:</p>
       <div class="ayuda-tabla">
         <div class="ayuda-fila ayuda-fila--header"><span>Hoja</span><span>Contenido</span></div>
-        <div class="ayuda-fila"><span>Estado actual</span><span>Habitación, planta, tipo, residente, DNI, código, fecha de entrada</span></div>
+        <div class="ayuda-fila"><span>Estado actual</span><span>Habitación, planta, tipo, residente, código, fecha de entrada</span></div>
         <div class="ayuda-fila"><span>Historial</span><span>Todas las ocupaciones con fechas de entrada/salida, motivo y notas</span></div>
         <div class="ayuda-fila"><span>Habitaciones libres</span><span>Habitaciones sin ocupación activa con su tipo y plazas disponibles</span></div>
       </div>

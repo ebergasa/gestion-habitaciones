@@ -72,6 +72,8 @@ export function registerHandlers() {
     db.asignarResidente(habitacionId, residenteId, fechaEntrada)))
   ipcMain.handle('desasignarResidente', h((_, ocupacionId, data) =>
     db.desasignarResidente(ocupacionId, data)))
+  ipcMain.handle('cambiarHabitacion', h((_, ocupacionId, data) =>
+    db.cambiarHabitacion(ocupacionId, data)))
 
   // ── Motivos de alta ───────────────────────────────────────────────────────
   ipcMain.handle('getMotivosAlta', h(() => db.getMotivosAlta()))
