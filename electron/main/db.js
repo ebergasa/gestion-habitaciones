@@ -101,6 +101,7 @@ export function initDB(dbPath) {
   // DELETE mode es el único fiable en unidades de red (SMB/CIFS).
   // WAL usa ficheros -shm de memoria compartida que no funcionan en red.
   db.pragma('journal_mode = DELETE')
+  db.pragma('synchronous = FULL')     // garantiza escritura completa en disco antes de continuar
   db.pragma('busy_timeout = 10000')   // esperar hasta 10 s si otro proceso escribe
   db.pragma('foreign_keys = ON')
   // Función disponible en todas las queries SQLite
