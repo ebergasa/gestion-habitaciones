@@ -108,16 +108,35 @@ export function initDB(dbPath) {
   db.function('normalizar', normalizar)
   crearSchema()
   seedHabitaciones()
-  asegurarHabitacionesNuevas()
+  aplicarMigracionDespliegue()
   return db
 }
 
-// Idempotente: crea habitaciones añadidas en revisiones posteriores del plano
-// (la 176 entró con el rediseño del corredor norte de la primera planta).
-function asegurarHabitacionesNuevas() {
-  db.prepare(
-    'INSERT OR IGNORE INTO habitaciones (numero, planta, tipo, capacidad) VALUES (?, ?, ?, ?)'
-  ).run('176', 'primera', 'doble', 2)
+// Migración única (mayo 2026) — rediseño del plano del edificio:
+//   1. Crea la habitación 176 (nueva en el corredor norte de la 1ª planta).
+//   2. Normaliza tipo/capacidad de todas las habitaciones según la nueva
+//      distribución de individuales.
+// Se ejecuta una sola vez gracias al flag en `config`. Pensada para correr
+// limpiamente al desplegar la versión nueva en las oficinas del cliente.
+function aplicarMigracionDespliegue() {
+  const FLAG = 'migration_individuales_2026_05'
+  if (db.prepare('SELECT 1 FROM config WHERE key = ?').get(FLAG)) return
+
+  const individuales = [
+    ...INDIVIDUALES_BAJA,
+    ...INDIVIDUALES_PRIMERA,
+    ...INDIVIDUALES_SEGUNDA,
+  ].map(String)
+  const placeholders = individuales.map(() => '?').join(',')
+
+  db.transaction(() => {
+    db.prepare(
+      'INSERT OR IGNORE INTO habitaciones (numero, planta, tipo, capacidad) VALUES (?, ?, ?, ?)'
+    ).run('176', 'primera', 'doble', 2)
+    db.prepare(`UPDATE habitaciones SET tipo='individual', capacidad=1 WHERE numero IN (${placeholders})`).run(...individuales)
+    db.prepare(`UPDATE habitaciones SET tipo='doble',      capacidad=2 WHERE numero NOT IN (${placeholders})`).run(...individuales)
+    db.prepare('INSERT INTO config (key, value) VALUES (?, ?)').run(FLAG, '1')
+  })()
 }
 
 function crearSchema() {
@@ -173,16 +192,17 @@ function crearSchema() {
 }
 
 
-// Habitaciones individuales de primera planta (resto son dobles)
+// Habitaciones individuales por planta (resto son dobles)
+const INDIVIDUALES_BAJA    = new Set([13])
 const INDIVIDUALES_PRIMERA = new Set([
-  // Ala sur (col izq, verdes)
-  104, 107, 110, 113, 116,
-  // Corredor este (fila inf, verdes)
+  // Ala sur
+  103, 106, 109, 112, 114, 117,
+  // Corredor este
   120, 123, 126, 129, 132, 135,
-  // Ala norte (col ext, verdes)
+  // Ala norte
   139, 142, 145, 148, 151, 154,
-  // Corredor oeste: ninguna individual
 ])
+const INDIVIDUALES_SEGUNDA = new Set([201, 227, 228])
 
 function seedHabitaciones() {
   const count = db.prepare('SELECT COUNT(*) as n FROM habitaciones').get()
@@ -200,9 +220,9 @@ function seedHabitaciones() {
 
   const habitaciones = []
 
-  // Planta Baja: 1–13 (la 13 es individual)
+  // Planta Baja: 1–13
   for (let i = 1; i <= 13; i++) {
-    const individual = i === 13
+    const individual = INDIVIDUALES_BAJA.has(i)
     habitaciones.push({ numero: String(i), planta: 'baja', tipo: individual ? 'individual' : 'doble', capacidad: individual ? 1 : 2 })
   }
 
@@ -212,8 +232,7 @@ function seedHabitaciones() {
     habitaciones.push({ numero: String(i), planta: 'primera', tipo: individual ? 'individual' : 'doble', capacidad: individual ? 1 : 2 })
   }
 
-  // Segunda Planta: 201–239 (individuales: 201, 227, 228)
-  const INDIVIDUALES_SEGUNDA = new Set([201, 227, 228])
+  // Segunda Planta: 201–239
   for (let i = 201; i <= 239; i++) {
     const individual = INDIVIDUALES_SEGUNDA.has(i)
     habitaciones.push({ numero: String(i), planta: 'segunda', tipo: individual ? 'individual' : 'doble', capacidad: individual ? 1 : 2 })
