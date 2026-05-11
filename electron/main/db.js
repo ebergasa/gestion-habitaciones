@@ -108,7 +108,16 @@ export function initDB(dbPath) {
   db.function('normalizar', normalizar)
   crearSchema()
   seedHabitaciones()
+  asegurarHabitacionesNuevas()
   return db
+}
+
+// Idempotente: crea habitaciones añadidas en revisiones posteriores del plano
+// (la 176 entró con el rediseño del corredor norte de la primera planta).
+function asegurarHabitacionesNuevas() {
+  db.prepare(
+    'INSERT OR IGNORE INTO habitaciones (numero, planta, tipo, capacidad) VALUES (?, ?, ?, ?)'
+  ).run('176', 'primera', 'doble', 2)
 }
 
 function crearSchema() {
@@ -197,8 +206,8 @@ function seedHabitaciones() {
     habitaciones.push({ numero: String(i), planta: 'baja', tipo: individual ? 'individual' : 'doble', capacidad: individual ? 1 : 2 })
   }
 
-  // Primera Planta: 101–175
-  for (let i = 101; i <= 175; i++) {
+  // Primera Planta: 101–176
+  for (let i = 101; i <= 176; i++) {
     const individual = INDIVIDUALES_PRIMERA.has(i)
     habitaciones.push({ numero: String(i), planta: 'primera', tipo: individual ? 'individual' : 'doble', capacidad: individual ? 1 : 2 })
   }
