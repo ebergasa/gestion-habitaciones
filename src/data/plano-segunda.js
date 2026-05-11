@@ -1,7 +1,7 @@
 // Segunda Planta: habitaciones 201-239 (39 habitaciones)
 // Layout perimetral con 4 zonas:
-//   Ala sur        (201-212): 2 columnas × 6 filas, lado sur
-//   Corredor este  (213-224): 2 filas × 6 columnas, parte inferior
+//   Ala sur        (201-212): 2 columnas × 6 filas, impares izquierda / pares derecha
+//   Corredor este  (213-224): 2 filas × 6 columnas, impares arriba / pares abajo
 //   Ala norte      (228-239): 2 columnas × 6 filas, lado norte
 //   Corredor oeste (225-227): 3 habitaciones en zona especializada
 
@@ -11,25 +11,25 @@ const RW = 100   // ancho habitación
 const RH = 52   // alto habitación
 const G  = 3    // gap entre habitaciones
 
-// — Ala sur (201-212): columna izquierda 201-206, columna derecha 207-212 —
+// — Ala sur (201-212): columna izquierda impares 201,203,…,211; columna derecha pares 202,204,…,212 —
 const ALA_SUR_Y       = 110
 const ALA_SUR_COL_GAP = 50   // separación entre columna izquierda e interior del ala sur
                               // columna derecha = 10 + RW + ALA_SUR_COL_GAP
 const alaSur = []
 for (let i = 0; i < 6; i++) {
-  alaSur.push({ numero: String(201 + i), x: 10,                        y: ALA_SUR_Y + i * (RH + G), w: RW, h: RH })
-  alaSur.push({ numero: String(207 + i), x: 10 + RW + ALA_SUR_COL_GAP, y: ALA_SUR_Y + i * (RH + G), w: RW, h: RH })
+  alaSur.push({ numero: String(201 + 2 * i), x: 10,                        y: ALA_SUR_Y + i * (RH + G), w: RW, h: RH })
+  alaSur.push({ numero: String(202 + 2 * i), x: 10 + RW + ALA_SUR_COL_GAP, y: ALA_SUR_Y + i * (RH + G), w: RW, h: RH })
 }
 
-// — Corredor este (213-224): fila superior 213-218, fila inferior 219-224 —
+// — Corredor este (213-224): fila superior impares 213,215,…,223; fila inferior pares 214,216,…,224 —
 const COR_ESTE_X       = 155   // x donde empieza el corredor este
 const COR_ESTE_Y       = 460   // y donde empieza el corredor este
 const COR_ESTE_W       = 129   // ancho de habitación (6 cols: 6×129+5×3 = 789px, llega hasta el ala norte)
 const COR_ESTE_ROW_GAP = 30    // separación entre fila superior e inferior del corredor este
 const corEste = []
 for (let i = 0; i < 6; i++) {
-  corEste.push({ numero: String(213 + i), x: COR_ESTE_X + i * (COR_ESTE_W + G), y: COR_ESTE_Y,                       w: COR_ESTE_W, h: RH })
-  corEste.push({ numero: String(219 + i), x: COR_ESTE_X + i * (COR_ESTE_W + G), y: COR_ESTE_Y + RH + COR_ESTE_ROW_GAP, w: COR_ESTE_W, h: RH })
+  corEste.push({ numero: String(213 + 2 * i), x: COR_ESTE_X + i * (COR_ESTE_W + G), y: COR_ESTE_Y,                       w: COR_ESTE_W, h: RH })
+  corEste.push({ numero: String(214 + 2 * i), x: COR_ESTE_X + i * (COR_ESTE_W + G), y: COR_ESTE_Y + RH + COR_ESTE_ROW_GAP, w: COR_ESTE_W, h: RH })
 }
 
 // — Ala norte (225-239) —
@@ -55,10 +55,11 @@ export const rooms = [...alaSur, ...corEste, ...alaNorte, ...corOeste]
 
 // Zonas comunes decorativas
 export const zones = [
-  { text: 'Asistidos I',  x: 155, y: 8,   w: 152, h: 74 },
-  { text: 'Descanso',     x: 312, y: 8,   w: 413, h: 74 },
-  { text: 'Asistidos II', x: 730, y: 8,   w: 215, h: 74 },
-  { text: 'UCI',          x: 10,  y: 483, w: 100, h: 65 },
+  { text: 'Despacho\nMédico', x: 10,  y: 8,   w: 100, h: 74 },
+  { text: 'Asistidos I',      x: 155, y: 8,   w: 152, h: 74 },
+  { text: 'Descanso',         x: 312, y: 8,   w: 413, h: 74 },
+  { text: 'Asistidos II',     x: 730, y: 8,   w: 215, h: 74 },
+  { text: 'UCI',              x: 10,  y: 460, w: 100, h: 65 },
 ]
 
 export const labels = [
